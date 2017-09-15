@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FrameDrawInfo.cs" />
+    <Compile Include="Gameplay\Framework\FrameDrawInfo.cs" />
     <Compile Include="Gameplay\Framework\ActionCondition.cs" />
     <Compile Include="Gameplay\Framework\Action.cs" />
     <Compile Include="Gameplay\Framework\Character.cs" />

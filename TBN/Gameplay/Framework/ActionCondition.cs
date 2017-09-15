@@ -11,11 +11,13 @@ namespace TBN
     public class ActionCondition
     {
         /// <summary>
-        /// The first frame permitted
+        /// The first frame permitted 
+        /// Inclusive
         /// </summary>
         public int FirstFrame { get; set; }
         /// <summary>
-        /// The last frame permitted
+        /// The last frame permitted 
+        /// Inclusive
         /// </summary>
         public int LastFrame { get; set; }
         /// <summary>
@@ -42,6 +44,8 @@ namespace TBN
             InputCondition = input;
             MiscCondition = misc;
         }
+
+        
 
 
     }

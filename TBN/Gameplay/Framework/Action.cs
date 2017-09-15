@@ -9,21 +9,17 @@ namespace TBN
 {
     public delegate void SimpleBehavior();
 
+
     public class Action
     {
         /// <summary>
         /// The ID for this action used to look up drawing information.
-        /// Not to be used by 
         /// </summary>
         public int ActionId { get; set; }
         /// <summary>
         /// The length in frames of the Action
         /// </summary>
-        public int Frames { get; set; }
-        /// <summary>
-        /// The length in frames that have passed since the action was primed
-        /// </summary>
-        public int CurrentFrame { get; set; }
+        public int EndFrame { get; set; }
         /// <summary>
         /// The value the opponents jugglemeter must be below in order to avoid whiffing
         /// </summary>
@@ -45,10 +41,6 @@ namespace TBN
         /// </summary>
         public int MaxHits { get; set; }
         /// <summary>
-        /// Number of times the action has hit
-        /// </summary>
-        public int CurrentHits { get; set; }
-        /// <summary>
         /// Ways you can combo forward from your current action
         /// </summary>
         public List<Tuple<ActionCondition, Action>> ComboList { get; set; }
@@ -62,22 +54,14 @@ namespace TBN
             int maxHits, List<Tuple<ActionCondition, Action>> comboList,
             List<Tuple<int, SimpleBehavior>> miscBehaviors)
         {
-            Frames = frameLength;
-            CurrentFrame = 0;
+            EndFrame = frameLength;
             JuggleNumber = juggleNum;
             JuggleMod = juggleMod;
             Hitboxes = hitboxes;
             Hurtboxes = hurtboxes;
             MaxHits = maxHits;
-            CurrentHits = 0;
             ComboList = comboList;
             MiscBehaviors = miscBehaviors;
-        }
-
-        public void Prime()
-        {
-            CurrentFrame = 0;
-            CurrentHits = 0;
         }
 
     }
