@@ -146,19 +146,34 @@ namespace TBN
 
 
             #endregion
-
-
         }
 
+        /// <summary>
+        /// Move the character this frame
+        /// </summary>
         public void Move()
         {
+            #region Movement
+            //Check if there are any misc behaviors for this frame
+            for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
+            {
+                if (CurrentAction.FrameDisplacement[i].Item1 < CurrentActionFrame && 
+                    (i == CurrentAction.FrameDisplacement.Count || CurrentAction.FrameDisplacement[i].Item1 > CurrentActionFrame))
+                {
+                    AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
+                }
+            }
+            #endregion
+
+
 
         }
 
 
-        public void Draw(SpriteBatch sb)
+        public virtual void Draw(SpriteBatch sb)
         {
-
+            FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame];
+            sb.Draw(MySheet.Sheet, position: AnchorPoint, sourceRectangle: drawInfo.SourceRectangle, origin: drawInfo.Origin);
         }
 
 

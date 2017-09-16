@@ -37,6 +37,10 @@ namespace TBN
         /// </summary>
         public List<Tuple<int, Rectangle>> Hurtboxes { get; set; }
         /// <summary>
+        /// A list of movement vectors and their start frames in order
+        /// </summary>
+        public List<Tuple<int, Vector2>> FrameDisplacement { get; set; }
+        /// <summary>
         /// The max number of times this action can hit
         /// </summary>
         public int MaxHits { get; set; }
@@ -49,8 +53,9 @@ namespace TBN
         /// </summary>
         public List<Tuple<int, SimpleBehavior>> MiscBehaviors { get; set; }
 
+
         public Action(int frameLength, int juggleNum, int juggleMod, 
-            List<Tuple<int, Rectangle>> hitboxes, List<Tuple<int, Rectangle>> hurtboxes, 
+            List<Tuple<int, Rectangle>> hitboxes, List<Tuple<int, Rectangle>> hurtboxes, List<Tuple<int, Vector2>> disp, 
             int maxHits, List<Tuple<ActionCondition, Action>> comboList,
             List<Tuple<int, SimpleBehavior>> miscBehaviors)
         {
@@ -59,6 +64,7 @@ namespace TBN
             JuggleMod = juggleMod;
             Hitboxes = hitboxes;
             Hurtboxes = hurtboxes;
+            FrameDisplacement = disp;
             MaxHits = maxHits;
             ComboList = comboList;
             MiscBehaviors = miscBehaviors;
