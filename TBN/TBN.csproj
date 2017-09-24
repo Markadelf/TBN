@@ -46,6 +46,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Gameplay\Input\InputManager.cs" />
     <Compile Include="Gameplay\Input\InputController.cs" />
+    <Compile Include="Gameplay\Input\KeyboardController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Gameplay\Framework\Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

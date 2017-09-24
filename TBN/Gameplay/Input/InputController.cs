@@ -13,17 +13,17 @@ namespace TBN
         /// <summary>
         /// Should always be between -1 and 1 on both axis.
         /// </summary>
-        public Vector2 StickPos { get; set; }
+        public abstract Vector2 StickPos { get; set; }
 
         /// <summary>
         /// The History of inputs on this controller
         /// </summary>
-        public int[] InputHistory { get; set; }
+        public abstract int[] InputHistory { get; set; }
 
         /// <summary>
         /// If true, the Input Manager will stop updating the controller
         /// </summary>
-        public bool Dispose { get; set; }
+        public abstract bool Dispose { get; set; }
 
 
         public InputController()
