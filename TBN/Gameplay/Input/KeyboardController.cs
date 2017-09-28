@@ -14,8 +14,9 @@ namespace TBN.Gameplay.Input
         /// reads entries as left, down, right, up, light punch, medium punch, heavy punch, special, short, roundhouse,  
         /// </summary>
         Keys[] InpCodes;
-        
-       
+
+        KeyboardState previous;
+        KeyboardState current;
        
        
         
@@ -25,7 +26,8 @@ namespace TBN.Gameplay.Input
         public KeyboardController()
         {
             InpCodes = new Keys[] {Keys.A, Keys.S, Keys.D, Keys.W, Keys.I, Keys.O, Keys.P, Keys.J, Keys.K, Keys.L, Keys.Enter,Keys.RightShift };
-
+            current = Keyboard.GetState();
+            previous = current;
             InputManager.ActiveInputs.Add(this);
             Dispose = false;
             StickPos = new Vector2(0, 0);
@@ -39,8 +41,11 @@ namespace TBN.Gameplay.Input
         {
             throw new NotImplementedException();
         }
+        
         public override void Update()
         {
+            previous = current;
+            current = Keyboard.GetState();
             StickPos = new Vector2(
                 /*start of vector definition*/
                 
@@ -67,16 +72,43 @@ namespace TBN.Gameplay.Input
             {
                 if (i < 9)
                 {
-                    int NotationNum = i + 1;//just a number i use to change it to fighting game notation so i can do certain kinds of math
-                    InputHistory[i] = (StickPos == new Vector2((NotationNum % 3) - 2, (NotationNum / 3))) ? //compares the stickpos to the stickposition required egnerated mathematically
+                    int NotationNum = i + 1;//just a number i use to convert to a notation usable for y axis calculation using integer division
+                    InputHistory[i] = (StickPos == new Vector2(((i % 3) - 1), ((NotationNum / 3)-2))) ? //compares the stickpos to the stickposition required generated mathematically
                         0 : (InputHistory[i] < 60) ? //if we meet the position return 0 and if not we check if the value has hit 60 yet
                         InputHistory[i] + 1 : 60; //if the value is 60 it stays 60 and if not it gets added to
                 }
                 else
                 {
-
+                    InputHistory[i] = (ButtonPressed(i)) ? //is the key pressed 
+                    0 : (InputHistory[i] < 60) ?//if so set it to 0 and if not check if it is less than 60
+                    InputHistory[i] + 1 : 60;//if so add one to the value if not it remains at 60
                 }
             }
+        }
+        /// <summary>
+        /// returns true if the specified button is held.
+        /// </summary>
+        /// <param name="HistoryLocation">location in InputHistory (see Input/InputController)</param>
+        /// <returns></returns>
+        public override bool ButtonHeld(int HistoryLocation)
+        {
+            if(HistoryLocation>8)
+            return current.IsKeyDown(InpCodes[HistoryLocation - 5]);
+
+            return InputHistory[HistoryLocation] == 0;
+        }
+        /// <summary>
+        /// returns true if the specified button is pressed.
+        /// </summary>
+        /// <param name="HistoryLocation">location in InputHistory (see Input/InputController)</param>
+        /// <returns></returns>
+        public override bool ButtonPressed(int HistoryLocation)
+        {
+            if (current.IsKeyDown(InpCodes[HistoryLocation - 5]))
+            {
+                return !(previous.IsKeyDown(InpCodes[HistoryLocation - 5]));
+            }
+            return false;
         }
     }
 }
