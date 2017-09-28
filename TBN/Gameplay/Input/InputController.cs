@@ -10,20 +10,21 @@ namespace TBN
 {
     public abstract class InputController
     {
+        
         /// <summary>
         /// Should always be between -1 and 1 on both axis.
         /// </summary>
-        public abstract Vector2 StickPos { get; set; }
+        public Vector2 StickPos { get; set; }
 
         /// <summary>
         /// The History of inputs on this controller
         /// </summary>
-        public abstract int[] InputHistory { get; set; }
+        public int[] InputHistory { get; set; }
 
         /// <summary>
         /// If true, the Input Manager will stop updating the controller
         /// </summary>
-        public abstract bool Dispose { get; set; }
+        public bool Dispose { get; set; }
 
 
         public InputController()
@@ -43,8 +44,10 @@ namespace TBN
         /// Updates the controls
         /// </summary>
         public abstract void Update();
-
-
+        /// <summary>
+        /// remaps the controls
+        /// </summary>
+        public abstract void RemapControls();
 
     }
 }
