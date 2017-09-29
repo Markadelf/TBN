@@ -31,7 +31,10 @@ namespace TBN
         /// The spritesheet used to draw this character
         /// </summary>
         public SpriteSheet MySheet { get; set; }
-
+        /// <summary>
+        /// this will be what we use to display the moves in a list and also helps when writing the individual character's classes
+        /// </summary>
+        public Dictionary<String, Action> MoveList;
         /// <summary>
         /// The current action the player is in
         /// </summary>
@@ -50,6 +53,10 @@ namespace TBN
         /// </summary>
         public bool LastHitLight { get; set; }
 
+        /// <summary>
+        /// returns true if the character is on the ground
+        /// </summary>
+        public bool OnGround { get; set; }
 
         /// <summary>
         /// NOT YET IMPLEMENTED
@@ -71,13 +78,74 @@ namespace TBN
             AnchorPoint = anchor;
             Input = input;
             MySheet = sheet;
+            OnGround = false;
             LastHitLight = false;
             JuggleMeter = 0;
             CurrentActionFrame = 0;
             CurrentActionHits = 0;
             GoIdle();
         }
+        /// <summary>
+        /// make a set of hitboxes or hurtboxes
+        /// 
+        /// to get a valid output right now you need to have the same number of ints as rectangles
+        /// 
+        /// to make a rectangle in "boxcode" use this format "/posx*posy*width*height//posx*posy*width*height/%"
+        /// 
+        /// basically you start and end every rectangle with '/' and separate parameters by anything but '/' or '%' 
+        /// 
+        /// you can end the method after finishing a rectangle by inputting
+        /// </summary>
+        /// <param name="frameoccurances">the frames in which the hitboxes appear in order</param>
+        /// <param name="boxcode">hitboxes in order of appearance</param>
+        /// <returns></returns>
+        public List<Tuple<int, Rectangle>> HitboxGenerator(int[] frameoccurances,string boxcode,int tilesize)
+        {
 
+            List<Tuple<int, Rectangle>> final = new List<Tuple<int, Rectangle>>();
+            int u = 0;
+            Tuple<int, Rectangle> Temp;
+            for ( int i = 0; i < boxcode.Length; i++)
+            {
+                
+                if (boxcode[i] == '/')
+                {
+                    List<int> Values = new List<int>();
+                    for (i++; i < boxcode.Length; i++)
+                    {
+                        
+                        int number=0;
+                        if ("1234567890".Contains(boxcode[i]))
+                        {
+                            int startpoint = i;
+                            int endpoint = 0;
+                            for (i++; i < boxcode.Length; i++)
+                            {
+                                if (!("1234567890".Contains(boxcode[i])))
+                                {
+                                    endpoint = i;
+                                    break;
+                                }
+                            }
+                            int.TryParse(boxcode.Substring(startpoint, (endpoint - startpoint)), out number);
+                            Values.Add(number);
+                        }
+                        else if ('/' == boxcode[i])
+                        {
+                            break;
+                        }
+                    }
+                    Temp = new Tuple<int, Rectangle>(frameoccurances[u], new Rectangle((int)AnchorPoint.X-tilesize/2+Values[0], (int)AnchorPoint.Y - tilesize + Values[1], Values[2], Values[3]));
+                    u++;
+                    final.Add(Temp);
+                }
+                if (boxcode[i] == '%')
+                {
+                    break;
+                }
+            }
+            return final;
+        }
 
         /// <summary>
         /// A function that should cause the character to got to the apropriate action post-combo.
