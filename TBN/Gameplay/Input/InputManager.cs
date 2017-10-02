@@ -51,7 +51,19 @@ namespace TBN
         {
             return control.InputHistory[9] < 3;
         }
+        public static bool Left(InputController control)
+        {
 
+            return control.InputHistory[3] < 3;
+
+        }
+        public static bool Right(InputController control)
+        {
+
+            return control.InputHistory[5] < 3;
+
+        }
+        
 
 
         #endregion

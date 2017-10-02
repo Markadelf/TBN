@@ -54,11 +54,12 @@ namespace TBN
         public List<Tuple<int, SimpleBehavior>> MiscBehaviors { get; set; }
 
 
-        public Action(int frameLength, int juggleNum, int juggleMod,
+        public Action(int actionID,int frameLength, int juggleNum, int juggleMod,
             List<Tuple<int, Rectangle>> hitboxes, List<Tuple<int, Rectangle>> hurtboxes, List<Tuple<int, Vector2>> disp,
             int maxHits, List<Tuple<ActionCondition, Action>> comboList,
             List<Tuple<int, SimpleBehavior>> miscBehaviors)
         {
+            ActionId = actionID;
             EndFrame = frameLength;
             JuggleNumber = juggleNum;
             JuggleMod = juggleMod;
@@ -69,11 +70,12 @@ namespace TBN
             ComboList = comboList;
             MiscBehaviors = miscBehaviors;
         }
-        public Action(int frameLength, int juggleNum, int juggleMod,
+        public Action(int actionID,int frameLength, int juggleNum, int juggleMod,
             List<Tuple<int, Rectangle>> hitboxes, List<Tuple<int, Rectangle>> hurtboxes, List<Tuple<int, Vector2>> disp,
             int maxHits,
             List<Tuple<int, SimpleBehavior>> miscBehaviors)
         {
+            ActionId = actionID;
             EndFrame = frameLength;
             JuggleNumber = juggleNum;
             JuggleMod = juggleMod;
