@@ -19,6 +19,12 @@ namespace TBN
     }
     public abstract class Character
     {
+        #region Modifiers and Multipliers
+        protected float DamageMultiplier { get; private set; }
+        #endregion
+
+
+
         /// <summary>
         /// The point that is moved when the character is moved. Corresponds to the origin on the draw information.
         /// </summary>
@@ -31,6 +37,10 @@ namespace TBN
         /// The spritesheet used to draw this character
         /// </summary>
         public SpriteSheet MySheet { get; set; }
+        /// <summary>
+        /// A list of all the projectiles belonging to this character.
+        /// </summary>
+        public List<Projectile> MyProjectiles { get; set; }
 
         /// <summary>
         /// The current action the player is in
@@ -164,10 +174,9 @@ namespace TBN
                 }
             }
             #endregion
-
-
-
         }
+
+
 
 
         public virtual void Draw(SpriteBatch sb)
