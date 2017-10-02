@@ -10,6 +10,7 @@ namespace TBN
 {
     public abstract class InputController
     {
+        
         /// <summary>
         /// Should always be between -1 and 1 on both axis.
         /// </summary>
@@ -17,6 +18,18 @@ namespace TBN
 
         /// <summary>
         /// The History of inputs on this controller
+        /// 
+        /// denoted as such
+        /// 
+        /// joystick
+        /// 678
+        /// 345 where 4 is the sticks resting position
+        /// 012
+        /// 
+        /// buttons
+        ///         15 16 start/select
+        /// 9 10 11 Light/Medium/Heavy
+        /// 12 13 14 Special/Short/RoundHouse
         /// </summary>
         public int[] InputHistory { get; set; }
 
@@ -37,14 +50,24 @@ namespace TBN
                 InputHistory[i] = 100;
             }
         }
-
-
+        /// <summary>
+        /// Returns true if the button at the InputHistory index is being held
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool ButtonHeld(int HistoryLocation);
+        /// <summary>
+        /// Returns true if the button at the InputHistory index is being held
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool ButtonPressed(int HistoryLocation);
         /// <summary>
         /// Updates the controls
         /// </summary>
         public abstract void Update();
-
-
+        /// <summary>
+        /// remaps the controls
+        /// </summary>
+        public abstract void RemapControls();
 
     }
 }
