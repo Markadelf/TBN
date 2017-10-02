@@ -37,5 +37,25 @@ namespace TBN
             }
         }
 
+
+
+
+
+
+        #region input methods
+
+        /// <summary>
+        /// Check if light has been pressed in the last three frames
+        /// </summary>
+        public static bool Light(InputController control)
+        {
+            return control.InputHistory[9] < 3;
+        }
+
+
+
+        #endregion
+
+
     }
 }
