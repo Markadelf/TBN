@@ -43,7 +43,20 @@ namespace TBN
 
 
         #region input methods
-
+        /// <summary>
+        /// Generates an Input logic delegate from parameters.
+        /// I'm only 90% sure this won't blow up horribly.
+        /// </summary>
+        /// <param name="buttonIndex">Index of the button.</param>
+        /// <param name="buffer">Amount of acceptable buffer.</param>
+        /// <returns>Your new input condition.</returns>
+        public static InputLogic GenerateLogic(int buttonIndex, int buffer)
+        {
+            int index = buttonIndex;
+            int buff = buffer;
+            return (InputController control) => { return control.InputHistory[index] < buff; };
+        }
+        
         /// <summary>
         /// Check if light has been pressed in the last three frames
         /// </summary>
@@ -51,18 +64,7 @@ namespace TBN
         {
             return control.InputHistory[9] < 3;
         }
-        public static bool Left(InputController control)
-        {
 
-            return control.InputHistory[3] < 3;
-
-        }
-        public static bool Right(InputController control)
-        {
-
-            return control.InputHistory[5] < 3;
-
-        }
         
 
 
