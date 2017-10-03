@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,20 @@ namespace TBN
 
 
 
-
+        #region simple logic
+        public static SimpleLogic None()
+        {
+            return () 
+                =>
+            {
+                return true;
+            };
+        }
+        public static SimpleLogic OnGround(Character character)
+        {
+            return () => { return character.OnGround; };
+        }
+        #endregion
         #region input methods
         /// <summary>
         /// Generates an Input logic delegate from parameters.
@@ -50,13 +64,16 @@ namespace TBN
         /// <param name="buttonIndex">Index of the button.</param>
         /// <param name="buffer">Amount of acceptable buffer.</param>
         /// <returns>Your new input condition.</returns>
-        public static InputLogic GenerateLogic(int buttonIndex, int buffer)
+        public static InputLogic GenerateLogic(InputController ctrl,int buttonIndex, int buffer)
         {
             int index = buttonIndex;
             int buff = buffer;
-            return (InputController control) => { return control.InputHistory[index] < buff; };
+            return (InputController control) => { return ctrl.InputHistory[index] < buff; };
         }
-        
+        public static InputLogic Yes()
+        {
+            return (InputController control) => true;
+        }
         /// <summary>
         /// Check if light has been pressed in the last three frames
         /// </summary>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TBN.Gameplay.Characters;
+using TBN.Gameplay.Input;
 
 namespace TBN
 {
@@ -9,9 +11,10 @@ namespace TBN
     /// </summary>
     public class Game1 : Game
     {
+        Texture2D Boxman;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        Character BoxMan;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -27,7 +30,20 @@ namespace TBN
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            Boxman = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
+            FrameDrawInfo[][] BoxmanRects= new FrameDrawInfo[9][];
+            for (int i = 0; i < Boxman.Height/32; i++)
+            {
+                FrameDrawInfo[] BoxmanRect = new FrameDrawInfo[2];
+                for (int j = 0; j < Boxman.Width/32; j++)
+                {
+                    
+                    BoxmanRect[j] = new FrameDrawInfo(new Rectangle(j*32,i*32,32,32), new Vector2(((j+1) * 32) - 16, (i+1) * 32));
+                    
+                }
+                BoxmanRects[i] = BoxmanRect;
+            }
+            BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
             base.Initialize();
         }
 
@@ -39,7 +55,7 @@ namespace TBN
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -61,7 +77,8 @@ namespace TBN
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            BoxMan.UpdateAction();
+            BoxMan.Move();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -73,11 +90,12 @@ namespace TBN
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            spriteBatch.Begin();
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // TODO: Add your drawing code here
-
+            BoxMan.Draw(spriteBatch);
             base.Draw(gameTime);
+            spriteBatch.End();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace TBN
         /// All of the draw info for all of the frames
         /// </summary>
         public FrameDrawInfo[][] FrameInfo { get; set; }
-
+        
 
         public SpriteSheet(Texture2D sheet, FrameDrawInfo[][] info)
         {

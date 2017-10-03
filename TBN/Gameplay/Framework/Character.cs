@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
+
 namespace TBN
 {
     public enum JuggleState
@@ -23,8 +24,10 @@ namespace TBN
         protected float DamageMultiplier { get; private set; }
         #endregion
 
-
-
+        /// <summary>
+        /// used for simple inertia calculation
+        /// </summary>
+        public Vector2 PreviousMovement;
         /// <summary>
         /// The point that is moved when the character is moved. Corresponds to the origin on the draw information.
         /// </summary>
@@ -46,19 +49,29 @@ namespace TBN
         /// this will be what we use to display the moves in a list and also helps when writing the individual character's classes
         /// </summary>
         public Dictionary<String, Action> MoveList;
+
         /// <summary>
         /// The current action the player is in
         /// </summary>
         public Action CurrentAction { get; set; }
         /// <summary>
+        /// floor height
+        /// </summary>
+        public int Floor { get; set; }
+        /// <summary>
         /// The length in frames that have passed since the action was primed
         /// </summary>
         public int CurrentActionFrame { get; set; }
+
         /// <summary>
         /// Number of times the action has hit
         /// </summary>
         public int CurrentActionHits { get; set; }
 
+        /// <summary>
+        /// Max Height of a jump used by go Idle 
+        /// </summary>
+        public int JumpHeight { get; set; }
         /// <summary>
         /// True if the last hit recieved was a light hit
         /// </summary>
@@ -86,6 +99,9 @@ namespace TBN
 
         public Character(Vector2 anchor, InputController input, SpriteSheet sheet)
         {
+            PreviousMovement = Vector2.Zero;
+            MoveList = new Dictionary<string, Action>();
+            Floor = 300;
             AnchorPoint = anchor;
             Input = input;
             MySheet = sheet;
@@ -94,7 +110,7 @@ namespace TBN
             JuggleMeter = 0;
             CurrentActionFrame = 0;
             CurrentActionHits = 0;
-            GoIdle();
+            
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -110,51 +126,18 @@ namespace TBN
         /// <param name="frameoccurances">the frames in which the hitboxes appear in order</param>
         /// <param name="boxcode">hitboxes in order of appearance</param>
         /// <returns></returns>
-        public List<Tuple<int, Rectangle>> HitboxGenerator(int[] frameoccurances,string boxcode,int tilesize)
+        public List<Tuple<int, Rectangle>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect,int tilesize)
         {
 
             List<Tuple<int, Rectangle>> final = new List<Tuple<int, Rectangle>>();
             int u = 0;
-            Tuple<int, Rectangle> Temp;
-            for ( int i = 0; i < boxcode.Length; i++)
+            for (int i = 0; i < rect.Length; i++)
             {
-                
-                if (boxcode[i] == '/')
-                {
-                    List<int> Values = new List<int>();
-                    for (i++; i < boxcode.Length; i++)
-                    {
-                        
-                        int number=0;
-                        if ("1234567890".Contains(boxcode[i]))
-                        {
-                            int startpoint = i;
-                            int endpoint = 0;
-                            for (i++; i < boxcode.Length; i++)
-                            {
-                                if (!("1234567890".Contains(boxcode[i])))
-                                {
-                                    endpoint = i;
-                                    break;
-                                }
-                            }
-                            int.TryParse(boxcode.Substring(startpoint, (endpoint - startpoint)), out number);
-                            Values.Add(number);
-                        }
-                        else if ('/' == boxcode[i])
-                        {
-                            break;
-                        }
-                    }
-                    Temp = new Tuple<int, Rectangle>(frameoccurances[u], new Rectangle((int)AnchorPoint.X-tilesize/2+Values[0], (int)AnchorPoint.Y - tilesize + Values[1], Values[2], Values[3]));
-                    u++;
-                    final.Add(Temp);
-                }
-                if (boxcode[i] == '%')
-                {
-                    break;
-                }
+                Tuple<int, Rectangle> Temp = new Tuple<int, Rectangle>(frameoccurances[i], rect[i]);
+                final.Add(Temp);
             }
+            
+            
             return final;
         }
 
@@ -165,12 +148,12 @@ namespace TBN
         public abstract void GoIdle();
 
         /// <summary>
-        /// Called once a frame.Handles the current action, inputs and comboing.
+        /// Called once a frame Handles the current action, inputs and comboing.
         /// </summary>
         public void UpdateAction()
         {
             CurrentActionFrame++;
-
+            Input.Update();
             #region ActionTransition
             //Check if we are moving to a new Action
             for(int i = 0; i < CurrentAction.ComboList.Count; i++)
@@ -189,10 +172,12 @@ namespace TBN
                             CurrentActionHits = 0;
                             CurrentAction = CurrentAction.ComboList[i].Item2;
                         }
+                   
                     }
                 }
                 else
                 {
+                   
                     //This break will only function if the Action Transitions are sorted.
                     break;
                 }
@@ -218,6 +203,7 @@ namespace TBN
                 }
                 if (CurrentAction.MiscBehaviors[i].Item1 > CurrentActionFrame)
                 {
+                    
                     break;
                 }
             }
@@ -233,14 +219,43 @@ namespace TBN
         public void Move()
         {
             #region Movement
+            if (OnGround)
+            {
+                if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
+                {
+                    //if so truncate the previous movement into something usable
+                    Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
+                    AnchorPoint += Movement;//add the movement
+                    PreviousMovement = Movement;//set prevoius movement
+
+                }
+                else
+                {
+                    PreviousMovement = Vector2.Zero;//set prevoius movement and do not move if the value is to small to truncate
+                }
+
+            }
+            else
+            {
+                Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + .4f);//gravity 
+                AnchorPoint += Movement;//add to mevement
+                PreviousMovement = Movement;//set previous movement
+            }
             //Check if there are any misc behaviors for this frame
             for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
             {
-                if (CurrentAction.FrameDisplacement[i].Item1 < CurrentActionFrame && 
-                    (i == CurrentAction.FrameDisplacement.Count || CurrentAction.FrameDisplacement[i].Item1 > CurrentActionFrame))
+                //I dont understand this logic - Chris :D
+                if (CurrentAction.FrameDisplacement[i].Item1 == CurrentActionFrame)
                 {
                     AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
+                    PreviousMovement = CurrentAction.FrameDisplacement[i].Item2;
                 }
+               
+            }
+            if (AnchorPoint.Y<=Floor)
+            {
+                OnGround = true;
+                AnchorPoint = new Vector2(AnchorPoint.X, Floor);
             }
             #endregion
         }
@@ -251,7 +266,23 @@ namespace TBN
         public virtual void Draw(SpriteBatch sb)
         {
             FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame];
-            sb.Draw(MySheet.Sheet, position: AnchorPoint, sourceRectangle: drawInfo.SourceRectangle, origin: drawInfo.Origin);
+
+
+            sb.Draw(MySheet.Sheet,
+                AnchorPoint,
+                drawInfo.SourceRectangle,
+                Color.White,
+                0f,
+                new Vector2(),
+               // new Vector2(16+drawInfo.SourceRectangle.Width*CurrentActionFrame,32+drawInfo.SourceRectangle.Height*CurrentAction.ActionId),
+                1.0f,
+                SpriteEffects.None,
+                0);
+
+            /* sb.Draw(MySheet.Sheet,
+                position: AnchorPoint,
+                sourceRectangle: drawInfo.SourceRectangle,
+                origin: drawInfo.Origin); */
         }
 
 
