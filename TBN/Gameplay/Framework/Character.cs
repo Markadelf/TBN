@@ -235,8 +235,8 @@ namespace TBN
                     AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
 
                 }
-                else
-                {//apply gravity and 
+                else if(CurrentAction.FrameDisplacement.Count<1)
+                {//apply gravity friction and inertia
                     if (OnGround)
                     {
 

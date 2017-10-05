@@ -34,7 +34,11 @@ namespace TBN.Gameplay.Framework
         {
             return () =>
             {
-                character.AnchorPoint = new Vector2(character.AnchorPoint.X+speed*character.Input.StickPos.X,character.AnchorPoint.Y);
+                List<Tuple<int, Vector2>> k = character.CurrentAction.FrameDisplacement;
+                for (int i = 0;i<k.Count;i++)
+                {
+                    k[i] =new Tuple<int,Vector2> (k[i].Item1,new Vector2(character.Input.StickPos.X * speed, k[i].Item2.Y));
+                }
             };
         }
         #endregion
