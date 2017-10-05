@@ -14,7 +14,8 @@ namespace TBN.Gameplay.Input
         /// reads entries as left, down, right, up, light punch, medium punch, heavy punch, special, short, roundhouse,  
         /// </summary>
         Keys[] InpCodes;
-
+        float x;
+        float y;
         KeyboardState previous;
         KeyboardState current;
        
@@ -44,46 +45,45 @@ namespace TBN.Gameplay.Input
         
         public override void Update()
         {
-            previous = current;
+            
             current = Keyboard.GetState();
-            StickPos = new Vector2(
-                /*start of vector definition*/
-                
-                /*start of x coord definition*/
-                (Keyboard.GetState().IsKeyDown(InpCodes[0])) ? //is the player pressing left
-                (Keyboard.GetState().IsKeyDown(InpCodes[3]) ? //if true check if the player is pressing right
-                0 : -1) //here pressing right gives you a 0 for x location and a -1 otherwise 
-                : (Keyboard.GetState().IsKeyDown(InpCodes[3]) ?//if false we check if the player is pressing right with other outcomes
-                1 : 0) //here pushing right gives you a 1 for x location and a 0 otherwise
-                /*end of x coord definition*/
-                ,
-                /*start of y coord definition*/
-                (Keyboard.GetState().IsKeyDown(InpCodes[1])) ?//checks if we are pressing down
-                (Keyboard.GetState().IsKeyDown(InpCodes[4]) ?//if true check if the player is pressing up 
-                0 : -1)//pressing up sets y to 0 and sets it to -1 otherwise.
-                : ((Keyboard.GetState().IsKeyDown(InpCodes[4]) ?//if false check if the player is pressing up with alternate outcomes. 
-                1 : 0)//pressing up sets y to 1 and sets it to 0 otherwise.
-                /*end of y coordinate*/
-                )
-                /*end of vector definition*/
-                );
+            x = 0;
+            y = 0;
+            if (current.IsKeyDown(InpCodes[0]))
+            {
+                x--;
+            }
+            if (current.IsKeyDown(InpCodes[2]))
+            {
+                x++;
+            }
+            if (current.IsKeyDown(InpCodes[3]))
+            {
+                y++;
+            }
+            if (current.IsKeyDown(InpCodes[1]))
+            {
+                y--;
+            }
+            StickPos = new Vector2(x,y);
             
             for (int i = 0; i < InputHistory.Length; i++)
             {
-                if (i < 9)
+                if (i < 8)
                 {
-                    int NotationNum = i + 1;//just a number i use to convert to a notation usable for y axis calculation using integer division
-                    InputHistory[i] = (StickPos == new Vector2(((i % 3) - 1), ((NotationNum / 3)-2))) ? //compares the stickpos to the stickposition required generated mathematically
-                        0 : (InputHistory[i] < 60) ? //if we meet the position return 0 and if not we check if the value has hit 60 yet
-                        InputHistory[i] + 1 : 60; //if the value is 60 it stays 60 and if not it gets added to
+                    InputHistory[i]++;
+                    int stickindex = (int)(4 + StickPos.X + 3 * StickPos.Y);
+                    InputHistory[stickindex] = 0;
+                    
                 }
                 else
                 {
                     InputHistory[i] = (ButtonPressed(i)) ? //is the key pressed 
-                    0 : (InputHistory[i] < 60) ?//if so set it to 0 and if not check if it is less than 60
-                    InputHistory[i] + 1 : 60;//if so add one to the value if not it remains at 60
+                    0 : //if so set it to 0 
+                    InputHistory[i] + 1;//if so add one to the value if not it remains at 60
                 }
             }
+            previous = current;
         }
         /// <summary>
         /// returns true if the specified button is held.

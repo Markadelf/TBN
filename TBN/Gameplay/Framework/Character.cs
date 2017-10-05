@@ -23,7 +23,10 @@ namespace TBN
         #region Modifiers and Multipliers
         protected float DamageMultiplier { get; private set; }
         #endregion
-
+        /// <summary>
+        /// keeps track of previous anchor
+        /// </summary>
+        Vector2 PrevAnchor;
         /// <summary>
         /// used for simple inertia calculation
         /// </summary>
@@ -99,6 +102,7 @@ namespace TBN
 
         public Character(Vector2 anchor, InputController input, SpriteSheet sheet)
         {
+            PrevAnchor = anchor;
             PreviousMovement = Vector2.Zero;
             MoveList = new Dictionary<string, Action>();
             Floor = 300;
@@ -204,7 +208,7 @@ namespace TBN
                 if (CurrentAction.MiscBehaviors[i].Item1 > CurrentActionFrame)
                 {
                     
-                    break;
+                    
                 }
             }
 
@@ -218,51 +222,90 @@ namespace TBN
         /// </summary>
         public void Move()
         {
+            
             #region Movement
-            if (OnGround)
+
+            //Check if there are any misc behaviors for this frame
+
+            for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
             {
-                if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
+
+                if (CurrentAction.FrameDisplacement[i].Item1 == CurrentActionFrame)
                 {
-                    //if so truncate the previous movement into something usable
-                    Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
-                    AnchorPoint += Movement;//add the movement
-                    PreviousMovement = Movement;//set prevoius movement
+                    AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
+
+                }
+                else
+                {//apply gravity and 
+                    if (OnGround)
+                    {
+
+                        if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
+                        {
+                            //if so truncate the previous movement into something usable
+                            Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
+                            AnchorPoint += Movement;//add the movement
+
+
+                        }
+
+                    }
+                    else
+                    {
+                        Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + .4f);//gravity 
+                        AnchorPoint += Movement;//add to movement
+                    }
+                }
+               
+            }
+            if (1 > CurrentAction.FrameDisplacement.Count)
+            {
+                if (OnGround)
+                {
+
+                    if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
+                    {
+                        //if so truncate the previous movement into something usable
+                        Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
+                        AnchorPoint += Movement;//add the movement
+
+
+                    }
 
                 }
                 else
                 {
-                    PreviousMovement = Vector2.Zero;//set prevoius movement and do not move if the value is to small to truncate
+                    Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 2f);//gravity 
+                    AnchorPoint += Movement;//add to movement
                 }
-
             }
-            else
-            {
-                Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + .4f);//gravity 
-                AnchorPoint += Movement;//add to mevement
-                PreviousMovement = Movement;//set previous movement
-            }
-            //Check if there are any misc behaviors for this frame
-            for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
-            {
-                //I dont understand this logic - Chris :D
-                if (CurrentAction.FrameDisplacement[i].Item1 == CurrentActionFrame)
-                {
-                    AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
-                    PreviousMovement = CurrentAction.FrameDisplacement[i].Item2;
-                }
-               
-            }
-            if (AnchorPoint.Y<=Floor)
+            if (AnchorPoint.Y >= Floor)
             {
                 OnGround = true;
                 AnchorPoint = new Vector2(AnchorPoint.X, Floor);
             }
+            PreviousMovement = AnchorPoint -PrevAnchor;
+            PrevAnchor = AnchorPoint;
             #endregion
         }
 
 
 
-
+        public virtual void Debug(SpriteBatch sb)
+        {
+            Texture2D tex = MySheet.Sheet;
+            string s = "";
+            for(int i = 9;i<Input.InputHistory.Length;i++)
+            {
+                if (Input.InputHistory[i] <= 3)
+                {
+                    s += i + " ";
+                }
+                
+            }
+            sb.Draw(tex,new Rectangle(20 + (int)Input.StickPos.X * 10, 20 + -10* (int)Input.StickPos.Y, 10, 10), color: Color.Black);
+            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s, new Vector2(40, 40), Color.Black);
+        }
         public virtual void Draw(SpriteBatch sb)
         {
             FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame];

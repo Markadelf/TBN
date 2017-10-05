@@ -14,6 +14,7 @@ namespace TBN.Gameplay.Framework
         {
             return () =>
             {
+                character.OnGround = false;
                 character.JumpHeight = (int)character.AnchorPoint.Y - height;
             };
         }
@@ -27,6 +28,13 @@ namespace TBN.Gameplay.Framework
             return () =>
             {
                 character.OnGround = false;
+            };
+        }
+        public static SimpleBehavior FreeMoveX(Character character,int speed)
+        {
+            return () =>
+            {
+                character.AnchorPoint = new Vector2(character.AnchorPoint.X+speed*character.Input.StickPos.X,character.AnchorPoint.Y);
             };
         }
         #endregion

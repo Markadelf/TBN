@@ -46,6 +46,7 @@
     <Compile Include="Gameplay\Framework\Character.cs" />
     <Compile Include="Gameplay\Framework\FightManager.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Gameplay\Framework\Logic.cs" />
     <Compile Include="Gameplay\Input\GamepadController.cs" />
     <Compile Include="Gameplay\Input\InputManager.cs" />
     <Compile Include="Gameplay\Input\InputController.cs" />

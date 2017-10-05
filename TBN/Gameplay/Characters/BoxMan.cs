@@ -25,39 +25,39 @@ namespace TBN.Gameplay.Characters
             MoveList.Add("Crouch", new Action(2,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
             MoveList.Add("Precrouch", new Action(1,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
             MoveList.Add("CrouchGetup", new Action(3,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("PreJump", new Action(6,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(1,Behavior.SetJumpHeight(this,90))}));
+            MoveList.Add("PreJump", new Action(6,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1, new Vector2(0, -14)) }, 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(1,Behavior.SetJumpHeight(this,30))}));
             MoveList.Add("JumpIdle", new Action(8,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("Jump", new Action(7,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(0,new Vector2(3f*Input.StickPos.X,17)), new Tuple<int, Vector2>(1, new Vector2(3f * Input.StickPos.X, 17)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("Jump", new Action(7,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(0,new Vector2(0,-3)), new Tuple<int, Vector2>(1, new Vector2(0, -3)) }, 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int,SimpleBehavior>(0,Behavior.OffGround(this)), new Tuple<int, SimpleBehavior>(1, Behavior.OffGround(this)),new Tuple<int, SimpleBehavior>(0,Behavior.FreeMoveX(this,3)),new Tuple<int, SimpleBehavior>(1,Behavior.FreeMoveX(this,3)) }));
             
             
 
-            MoveList["Idle"].ComboList = new List<Tuple<ActionCondition, Action>>{ new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,0), InputManager.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,0), InputManager.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,2,0), InputManager.None()),MoveList["Precrouch"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,0)+InputManager.GenerateLogic(Input,7,0)+InputManager.GenerateLogic(Input,8,0), InputManager.None()),MoveList["PreJump"]) };
-            MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,0), InputManager.None()),MoveList["Idle"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,0), InputManager.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,2,0), InputManager.None()),MoveList["Precrouch"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,0)+InputManager.GenerateLogic(Input,7,0)+InputManager.GenerateLogic(Input,8,0), InputManager.None()),MoveList["PreJump"]) };
-            MoveList["BackWalk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,0), InputManager.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,0), InputManager.None()), MoveList["Idle"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,2,0), InputManager.None()),MoveList["Precrouch"]),
-            new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,0)+InputManager.GenerateLogic(Input,7,0)+InputManager.GenerateLogic(Input,8,0), InputManager.None()),MoveList["PreJump"]) };
-            MoveList["Crouch"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,0), InputManager.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,0), InputManager.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(1, 1, false, InputManager.GenerateLogic(Input,2,0), InputManager.None()),MoveList["Crouch"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,0), InputManager.None()), MoveList["CrouchGetup"])};
-            MoveList["Precrouch"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,0), InputManager.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,0), InputManager.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,0), InputManager.None()), MoveList["CrouchGetup"])};
-            MoveList["CrouchGetup"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,0), InputManager.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,0), InputManager.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,2,0), InputManager.None()),MoveList["Precrouch"]),
-            new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,0)+InputManager.GenerateLogic(Input,7,0)+InputManager.GenerateLogic(Input,8,0), InputManager.None()),MoveList["PreJump"])};
+            MoveList["Idle"].ComboList = new List<Tuple<ActionCondition, Action>>{ new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"]) };
+            MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()),MoveList["Idle"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"]) };
+            MoveList["BackWalk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()), MoveList["Idle"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
+            new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"]) };
+            MoveList["Crouch"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(1, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Crouch"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()), MoveList["CrouchGetup"])};
+            MoveList["Precrouch"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()), MoveList["CrouchGetup"])};
+            MoveList["CrouchGetup"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
+            new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"])};
             MoveList["PreJump"].ComboList = new List<Tuple<ActionCondition, Action>>();
-            MoveList["JumpIdle"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.Yes(), InputManager.OnGround(this)), MoveList["Idle"]) };
-            MoveList["Jump"].ComboList = new List<Tuple<ActionCondition, Action>> {new Tuple<ActionCondition, Action>(new ActionCondition(0,1,false,InputManager.GenerateLogic(Input,9,4), InputManager.None()),MoveList["JumpIdle"]),
-            new Tuple<ActionCondition, Action>(new ActionCondition(0,1,false,null, InputManager.OnGround(this)),MoveList["Idle"])
+            MoveList["JumpIdle"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.Yes(), Logic.OnGround(this)), MoveList["Idle"]) };
+            MoveList["Jump"].ComboList = new List<Tuple<ActionCondition, Action>> {new Tuple<ActionCondition, Action>(new ActionCondition(0,1,false,InputManager.GenerateLogic(Input,7,1), Logic.UnderHeight(this,JumpHeight)),MoveList["Jump"]),
+            new Tuple<ActionCondition, Action>(new ActionCondition(0,1,false,InputManager.Yes(), Logic.OnGround(this)),MoveList["Idle"])
             };
             CurrentAction = MoveList["JumpIdle"];
         }
@@ -66,40 +66,34 @@ namespace TBN.Gameplay.Characters
         {
             if (OnGround)
             {
-                for (int i = 0; i < Input.InputHistory.Length; i++)
+                if (CurrentAction.ActionId == 6 || CurrentAction.ActionId == 7 && AnchorPoint.Y > JumpHeight)
                 {
-                    if (i < 9)
-                    {
-                        if (i < 3)
-                        {
-                            if(Input.InputHistory[i]<=0)
-                                CurrentAction = MoveList["Crouch"];
-                        }
-                        if (i == 3)
-                        {
-                            if (Input.InputHistory[i] <= 0)
-                                CurrentAction = MoveList["BackWalk"];
-                        }
-                        if (i == 4)
-                        {
-                            if (Input.InputHistory[i] <= 0)
-                                CurrentAction = MoveList["Idle"];
-                        }
-                        if (i == 5)
-                        {
-                            if (Input.InputHistory[i] <= 0)
-                                CurrentAction = MoveList["Walk"];
-                        }
-                        if (i > 5)
-                        {
-                            if (Input.InputHistory[i] <= 0)
-                                CurrentAction = MoveList["PreJump"];
-                        }
-                    }
+                    CurrentAction = MoveList["Jump"];
                 }
-                CurrentAction = MoveList["Idle"];
+                if (Input.InputHistory[1]<=1)
+                                CurrentAction = MoveList["Crouch"];
+                        
+                        
+                            if (Input.InputHistory[3] <= 1)
+                                CurrentAction = MoveList["BackWalk"];
+                        
+                       
+                            if (Input.InputHistory[4] <= 1)
+                                CurrentAction = MoveList["Idle"];
+                        
+                            if (Input.InputHistory[5] <= 1)
+                                CurrentAction = MoveList["Walk"];
+                        
+                        
+                            if (Input.InputHistory[6] <= 1 || Input.InputHistory[7] <= 1 || Input.InputHistory[8] <= 1)
+                                CurrentAction = MoveList["PreJump"];
+
+               
+
+
             }
-            else if (CurrentAction.ActionId == 7&&AnchorPoint.Y<JumpHeight)
+
+            else if (CurrentAction.ActionId == 6||CurrentAction.ActionId==7 && AnchorPoint.Y > JumpHeight)
             {
                 CurrentAction = MoveList["Jump"];
             }

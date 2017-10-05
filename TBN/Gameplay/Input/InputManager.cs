@@ -42,20 +42,7 @@ namespace TBN
 
 
 
-        #region simple logic
-        public static SimpleLogic None()
-        {
-            return () 
-                =>
-            {
-                return true;
-            };
-        }
-        public static SimpleLogic OnGround(Character character)
-        {
-            return () => { return character.OnGround; };
-        }
-        #endregion
+       
         #region input methods
         /// <summary>
         /// Generates an Input logic delegate from parameters.

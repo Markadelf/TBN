@@ -25,3 +25,10 @@
 /processorParam:TextureFormat=Color
 /build:CharacterSpriteSheets/Boxman.png
 
+#begin Fonts/Debug.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Debug.spritefont
+

@@ -11,6 +11,7 @@ namespace TBN
     /// </summary>
     public class Game1 : Game
     {
+        public static SpriteFont Font;
         Texture2D Boxman;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -44,6 +45,7 @@ namespace TBN
                 BoxmanRects[i] = BoxmanRect;
             }
             BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
+            Font = Content.Load<SpriteFont>("Fonts/Debug");
             base.Initialize();
         }
 
@@ -77,8 +79,10 @@ namespace TBN
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            
             BoxMan.UpdateAction();
             BoxMan.Move();
+
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -93,6 +97,7 @@ namespace TBN
             spriteBatch.Begin();
             GraphicsDevice.Clear(Color.CornflowerBlue);
             // TODO: Add your drawing code here
+            BoxMan.Debug(spriteBatch);
             BoxMan.Draw(spriteBatch);
             base.Draw(gameTime);
             spriteBatch.End();
