@@ -21,8 +21,9 @@ namespace TBN
     public abstract class Character
     {
         #region Modifiers and Multipliers
-        protected float DamageMultiplier { get; private set; }
+        public abstract float DamageMultiplier{ get; }
         #endregion
+
         /// <summary>
         /// keeps track of previous anchor
         /// </summary>
@@ -130,14 +131,14 @@ namespace TBN
         /// <param name="frameoccurances">the frames in which the hitboxes appear in order</param>
         /// <param name="boxcode">hitboxes in order of appearance</param>
         /// <returns></returns>
-        public List<Tuple<int, Rectangle>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect,int tilesize)
+        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect,int tilesize)
         {
 
-            List<Tuple<int, Rectangle>> final = new List<Tuple<int, Rectangle>>();
+            List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
             int u = 0;
             for (int i = 0; i < rect.Length; i++)
             {
-                Tuple<int, Rectangle> Temp = new Tuple<int, Rectangle>(frameoccurances[i], rect[i]);
+                Tuple<int, Rectangle[]> Temp = new Tuple<int, Rectangle[]>(frameoccurances[i], new Rectangle[]{ rect[i] });
                 final.Add(Temp);
             }
             
@@ -329,6 +330,23 @@ namespace TBN
         }
 
 
+
+
+
+
+        static Rectangle ConvertToWorldSpace(Vector2 anchor, Rectangle rect)
+        {
+            rect.X += (int)anchor.X;
+            rect.Y += (int)anchor.Y;
+            return rect;
+        }
+
+        static Rectangle ConvertToAnchorSpace(Vector2 anchor, Rectangle rect)
+        {
+            rect.X -= (int)anchor.X;
+            rect.Y -= (int)anchor.Y;
+            return rect;
+        }
 
     }
 }

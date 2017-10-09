@@ -10,18 +10,18 @@ using System.Threading;
 namespace TBN.Gameplay.Characters
 {
 
-    class BoxMan : Character
+    class AltBoxMan : Character
     {
         public override float DamageMultiplier { get { return 1; } }
 
 
 
-        public BoxMan(Vector2 anchor, InputController input, SpriteSheet sheet) : base(anchor, input, sheet)
+        public AltBoxMan(Vector2 anchor, InputController input, SpriteSheet sheet) : base(anchor, input, sheet)
         {
         
             //add moves to movelist
-            MoveList.Add("Idle",new Action(0,2,0,0,new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), maxHits: 0, miscBehaviors: new List<Tuple<int,SimpleBehavior>>()));
-            MoveList.Add("Walk", new Action(4,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1,new Vector2(8,0)), new Tuple<int,Vector2>(2,new Vector2(8,0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("Idle", Idle);
+            MoveList.Add("Walk", Walk);
             MoveList.Add("BackWalk", new Action(5,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1, new Vector2(-8, 0)), new Tuple<int, Vector2>(2, new Vector2(-8, 0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
             MoveList.Add("Crouch", new Action(2,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
             MoveList.Add("Precrouch", new Action(1,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
@@ -32,10 +32,6 @@ namespace TBN.Gameplay.Characters
             
             
             //set up transitions
-            MoveList["Idle"].ComboList = new List<Tuple<ActionCondition, Action>>{ new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"]) };
             MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()),MoveList["Idle"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
@@ -106,5 +102,202 @@ namespace TBN.Gameplay.Characters
            
         }
 
-    }
+
+        #region Actions
+
+        private Action idle;
+        public Action Idle
+        {
+            get {
+                if(idle == null)
+                {
+                    idle = new Action(
+                        //Action ID
+                        0,
+                        //Length in Frames
+                        2,
+                        //Juggle Num
+                        0,
+                        //juggleMod
+                        0,
+                        //Hitboxes for taking damage
+                        new List<Tuple<int, Rectangle[]>> { },
+                        //Hitboxes for dealing damage
+                        new List<Tuple<int, Rectangle[]>> {
+                            new Tuple<int, Rectangle[]>(0, new Rectangle[]{ new Rectangle(0, 0, 32, 32) }),
+                            new Tuple<int, Rectangle[]>(0, new Rectangle[]{ new Rectangle(0, 0, 32, 32) })
+                        },
+                        //Displacements
+                        new List<Tuple<int, Vector2>> { },
+                        //max hits
+                        0,
+                        #region combolist
+                        new List<Tuple<ActionCondition, Action>>{
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,5,1), 
+                                    //Misc Logic
+                                    null
+                                ),
+                                Walk
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,3,1), 
+                                    //Misc Logic
+                                    null
+                                ), 
+                                MoveList["BackWalk"]
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,1,1), 
+                                    //Misc Logic
+                                    null
+                                ),
+                                MoveList["Precrouch"]
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    0, 
+                                    1, 
+                                    false, 
+                                        InputManager.GenerateLogic(Input,6,1)+
+                                        InputManager.GenerateLogic(Input,7,1)+
+                                        InputManager.GenerateLogic(Input,8,1), 
+                                    null
+                                ),
+                                MoveList["PreJump"]
+                            )
+                        },
+                        #endregion
+                        //Misc behaviors
+                        null);
+                }
+                return idle;
+            }
+        }
+        private Action walk;
+        public Action Walk
+        {
+            get
+            {
+                if (walk == null)
+                {
+                    walk = new Action(
+                        //Action ID
+                        4,
+                        //Length in Frames
+                        2,
+                        //Juggle Num
+                        0,
+                        //juggleMod
+                        0,
+                        //Hitboxes for taking damage
+                        new List<Tuple<int, Rectangle[]>> { },
+                        //Hitboxes for dealing damage
+                        new List<Tuple<int, Rectangle[]>> {
+                            new Tuple<int, Rectangle[]>(0, new Rectangle[]{ new Rectangle(0, 0, 32, 32) }),
+                            new Tuple<int, Rectangle[]>(0, new Rectangle[]{ new Rectangle(0, 0, 32, 32) })
+                        },
+                        //Displacements
+                        new List<Tuple<int, Vector2>> {
+                            new Tuple<int, Vector2>(1, new Vector2(8, 0)),
+                            new Tuple<int, Vector2>(2, new Vector2(8, 0))
+                        },
+                        //max hits
+                        0,
+                    #region combolist
+                        new List<Tuple<ActionCondition, Action>>{
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,5,1), 
+                                    //Misc Logic
+                                    null
+                                ),
+                                MoveList["Walk"]
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,3,1), 
+                                    //Misc Logic
+                                    null
+                                ),
+                                MoveList["BackWalk"]
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    //Start frame
+                                    0, 
+                                    //End frame
+                                    1,
+                                    //Must hit
+                                    false, 
+                                    //Controller Logic
+                                    InputManager.GenerateLogic(Input,1,1), 
+                                    //Misc Logic
+                                    null
+                                ),
+                                MoveList["Precrouch"]
+                            ),
+                            new Tuple<ActionCondition, Action>(
+                                new ActionCondition(
+                                    0,
+                                    1,
+                                    false,
+                                        InputManager.GenerateLogic(Input,6,1)+
+                                        InputManager.GenerateLogic(Input,7,1)+
+                                        InputManager.GenerateLogic(Input,8,1),
+                                    null
+                                ),
+                                MoveList["PreJump"]
+                            )
+                        },
+                    #endregion
+                        //Misc behaviors
+                        null);
+                }
+                return walk;
+            }
+        }
+        #endregion
+
+
+
+    }//End Class
 }

@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Gameplay\Characters\AltBoxMan.cs" />
     <Compile Include="Gameplay\Characters\BoxMan.cs" />
     <Compile Include="Gameplay\Framework\Behavior.cs" />
     <Compile Include="Gameplay\Framework\FrameDrawInfo.cs" />
