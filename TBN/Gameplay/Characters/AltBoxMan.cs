@@ -32,10 +32,6 @@ namespace TBN.Gameplay.Characters
             
             
             //set up transitions
-            MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()),MoveList["Idle"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), Logic.None()), MoveList["BackWalk"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,6,1)+InputManager.GenerateLogic(Input,7,1)+InputManager.GenerateLogic(Input,8,1), Logic.None()),MoveList["PreJump"]) };
             MoveList["BackWalk"].ComboList = new List<Tuple<ActionCondition, Action>> { new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), Logic.None()),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), Logic.None()), MoveList["Idle"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), Logic.None()),MoveList["Precrouch"]),
@@ -131,8 +127,10 @@ namespace TBN.Gameplay.Characters
                         new List<Tuple<int, Vector2>> { },
                         //max hits
                         0,
-                        #region combolist
-                        new List<Tuple<ActionCondition, Action>>{
+                        //Misc behaviors
+                        null);
+                    #region combolist
+                    idle.ComboList = new List<Tuple<ActionCondition, Action>>{
                             new Tuple<ActionCondition, Action>(
                                 new ActionCondition(
                                     //Start frame
@@ -148,52 +146,9 @@ namespace TBN.Gameplay.Characters
                                 ),
                                 Walk
                             ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    //Start frame
-                                    0, 
-                                    //End frame
-                                    1,
-                                    //Must hit
-                                    false, 
-                                    //Controller Logic
-                                    InputManager.GenerateLogic(Input,3,1), 
-                                    //Misc Logic
-                                    null
-                                ), 
-                                MoveList["BackWalk"]
-                            ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    //Start frame
-                                    0, 
-                                    //End frame
-                                    1,
-                                    //Must hit
-                                    false, 
-                                    //Controller Logic
-                                    InputManager.GenerateLogic(Input,1,1), 
-                                    //Misc Logic
-                                    null
-                                ),
-                                MoveList["Precrouch"]
-                            ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    0, 
-                                    1, 
-                                    false, 
-                                        InputManager.GenerateLogic(Input,6,1)+
-                                        InputManager.GenerateLogic(Input,7,1)+
-                                        InputManager.GenerateLogic(Input,8,1), 
-                                    null
-                                ),
-                                MoveList["PreJump"]
-                            )
-                        },
+
+                        };
                         #endregion
-                        //Misc behaviors
-                        null);
                 }
                 return idle;
             }
@@ -223,74 +178,20 @@ namespace TBN.Gameplay.Characters
                         },
                         //Displacements
                         new List<Tuple<int, Vector2>> {
-                            new Tuple<int, Vector2>(1, new Vector2(8, 0)),
+                            new Tuple<int, Vector2>(0, new Vector2(8, 0)),
                             new Tuple<int, Vector2>(2, new Vector2(8, 0))
                         },
                         //max hits
                         0,
-                    #region combolist
-                        new List<Tuple<ActionCondition, Action>>{
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    //Start frame
-                                    0, 
-                                    //End frame
-                                    1,
-                                    //Must hit
-                                    false, 
-                                    //Controller Logic
-                                    InputManager.GenerateLogic(Input,5,1), 
-                                    //Misc Logic
-                                    null
-                                ),
-                                MoveList["Walk"]
-                            ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    //Start frame
-                                    0, 
-                                    //End frame
-                                    1,
-                                    //Must hit
-                                    false, 
-                                    //Controller Logic
-                                    InputManager.GenerateLogic(Input,3,1), 
-                                    //Misc Logic
-                                    null
-                                ),
-                                MoveList["BackWalk"]
-                            ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    //Start frame
-                                    0, 
-                                    //End frame
-                                    1,
-                                    //Must hit
-                                    false, 
-                                    //Controller Logic
-                                    InputManager.GenerateLogic(Input,1,1), 
-                                    //Misc Logic
-                                    null
-                                ),
-                                MoveList["Precrouch"]
-                            ),
-                            new Tuple<ActionCondition, Action>(
-                                new ActionCondition(
-                                    0,
-                                    1,
-                                    false,
-                                        InputManager.GenerateLogic(Input,6,1)+
-                                        InputManager.GenerateLogic(Input,7,1)+
-                                        InputManager.GenerateLogic(Input,8,1),
-                                    null
-                                ),
-                                MoveList["PreJump"]
-                            )
-                        },
-                    #endregion
+                   
                         //Misc behaviors
                         null);
+                    #region combolist
+                        walk.ComboList = new List<Tuple<ActionCondition, Action>>{
+                            new Tuple<ActionCondition, Action>(new ActionCondition(0,0,false, null, null), Walk)
+                        };
+                    #endregion
+
                 }
                 return walk;
             }

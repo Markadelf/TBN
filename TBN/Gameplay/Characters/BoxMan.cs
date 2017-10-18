@@ -95,7 +95,7 @@ namespace TBN.Gameplay.Characters
 
             }
 
-            else if (CurrentAction.ActionId == 6||CurrentAction.ActionId==7 && AnchorPoint.Y > JumpHeight)
+            else if (CurrentAction != null && (CurrentAction.ActionId == 6||CurrentAction.ActionId==7 && AnchorPoint.Y > JumpHeight))
             {
                 CurrentAction = MoveList["Jump"];
             }

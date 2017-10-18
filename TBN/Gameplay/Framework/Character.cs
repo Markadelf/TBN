@@ -171,7 +171,7 @@ namespace TBN
                     if ((!condition.MustHit) || (CurrentActionHits > 0) && condition.LastFrame >= CurrentActionFrame)
                     {
                         //Has the input been entered / other?
-                        if (condition.InputCondition(Input) && condition.MiscCondition())
+                        if ((condition.InputCondition == null || condition.InputCondition(Input)) && (condition.MiscCondition == null || condition.MiscCondition()))
                         {
                             CurrentActionFrame = 0;
                             CurrentActionHits = 0;
@@ -200,16 +200,14 @@ namespace TBN
 
             #region MiscBehaviors
             //Check if there are any misc behaviors for this frame
-            for (int i = 0; i < CurrentAction.MiscBehaviors.Count; i++)
+            if (CurrentAction.MiscBehaviors != null)
             {
-                if(CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame)
+                for (int i = 0; i < CurrentAction.MiscBehaviors.Count; i++)
                 {
-                    CurrentAction.MiscBehaviors[i].Item2();
-                }
-                if (CurrentAction.MiscBehaviors[i].Item1 > CurrentActionFrame)
-                {
-                    
-                    
+                    if (CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame)
+                    {
+                        CurrentAction.MiscBehaviors[i].Item2();
+                    }
                 }
             }
 

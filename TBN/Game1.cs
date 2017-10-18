@@ -44,7 +44,7 @@ namespace TBN
                 }
                 BoxmanRects[i] = BoxmanRect;
             }
-            BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
+            BoxMan = new AltBoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
             base.Initialize();
         }
