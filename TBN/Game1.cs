@@ -95,7 +95,7 @@ namespace TBN
         protected override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Wheat);
             // TODO: Add your drawing code here
             BoxMan.Debug(spriteBatch);
             BoxMan.Draw(spriteBatch);

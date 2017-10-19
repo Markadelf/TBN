@@ -10,25 +10,31 @@ using System.Threading;
 namespace TBN.Gameplay.Characters
 {
 
+    
+
     class BoxMan : Character
     {
-        public override float DamageMultiplier { get { return 1; } }
 
-
-
+        Point TopLeft(int x, int y)
+        {
+          return new Point(x + (int)AnchorPoint.X - 16, y + (int)AnchorPoint.Y - 32);         
+            
+        }
+        
         public BoxMan(Vector2 anchor, InputController input, SpriteSheet sheet) : base(anchor, input, sheet)
         {
-        
+
+           
             //add moves to movelist
-            MoveList.Add("Idle",new Action(0,2,0,0,new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), maxHits: 0, miscBehaviors: new List<Tuple<int,SimpleBehavior>>()));
-            MoveList.Add("Walk", new Action(4,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1,new Vector2(8,0)), new Tuple<int,Vector2>(2,new Vector2(8,0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("BackWalk", new Action(5,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1, new Vector2(-8, 0)), new Tuple<int, Vector2>(2, new Vector2(-8, 0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("Crouch", new Action(2,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("Precrouch", new Action(1,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("CrouchGetup", new Action(3,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("PreJump", new Action(6,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(1,Behavior.SetJumpHeight(this,70))}));
-            MoveList.Add("JumpIdle", new Action(8,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
-            MoveList.Add("Jump", new Action(7,2, 0, 0, new List<Tuple<int, Rectangle[]>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(0,new Vector2(0,-5)), new Tuple<int, Vector2>(1, new Vector2(0, -5)) }, 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int,SimpleBehavior>(0,Behavior.OffGround(this)), new Tuple<int, SimpleBehavior>(1, Behavior.OffGround(this)),new Tuple<int, SimpleBehavior>(0,Behavior.FreeMoveX(this,8)),new Tuple<int, SimpleBehavior>(1,Behavior.FreeMoveX(this,8)) }));
+            MoveList.Add("Idle",new Action(0,2,0,0,new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0,0,32,32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), maxHits: 0, miscBehaviors: new List<Tuple<int,SimpleBehavior>>()));
+            MoveList.Add("Walk", new Action(4,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1,new Vector2(8,0)), new Tuple<int,Vector2>(2,new Vector2(8,0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("BackWalk", new Action(5,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(1, new Vector2(-8, 0)), new Tuple<int, Vector2>(2, new Vector2(-8, 0)) }, 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("Crouch", new Action(2,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("Precrouch", new Action(1,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("CrouchGetup", new Action(3,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("PreJump", new Action(6,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(1,Behavior.SetJumpHeight(this,120))}));
+            MoveList.Add("JumpIdle", new Action(8,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>>(), 0, new List<Tuple<int, SimpleBehavior>>()));
+            MoveList.Add("Jump", new Action(7,2, 0, 0, new List<Tuple<int, Rectangle>>(), HitboxGenerator(new int[] { 0, 1 }, new Rectangle[] { new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, 32, 32) }, 32), new List<Tuple<int, Vector2>> { new Tuple<int, Vector2>(0,new Vector2(0,-6)), new Tuple<int, Vector2>(1, new Vector2(0, -10)) }, 0, new List<Tuple<int, SimpleBehavior>> { new Tuple<int,SimpleBehavior>(0,Behavior.OffGround(this)), new Tuple<int, SimpleBehavior>(1, Behavior.OffGround(this)),new Tuple<int, SimpleBehavior>(0,Behavior.FreeMoveX(this,6)),new Tuple<int, SimpleBehavior>(1,Behavior.FreeMoveX(this,6)) }));
             
             
             //set up transitions
@@ -63,7 +69,6 @@ namespace TBN.Gameplay.Characters
             CurrentAction = MoveList["JumpIdle"];
         }
 
-
         public override void GoIdle()
         {
             if (OnGround)
@@ -95,7 +100,7 @@ namespace TBN.Gameplay.Characters
 
             }
 
-            else if (CurrentAction != null && (CurrentAction.ActionId == 6||CurrentAction.ActionId==7 && AnchorPoint.Y > JumpHeight))
+            else if (CurrentAction.ActionId == 6||CurrentAction.ActionId==7 && AnchorPoint.Y > JumpHeight)
             {
                 CurrentAction = MoveList["Jump"];
             }
