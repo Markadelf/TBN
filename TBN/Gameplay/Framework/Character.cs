@@ -20,6 +20,9 @@ namespace TBN
     }
     public abstract class Character
     {
+        #region Debug Values
+        float MaxHeight = 0;
+        #endregion
         #region Modifiers and Multipliers
         protected float DamageMultiplier { get; private set; }
         #endregion
@@ -94,6 +97,8 @@ namespace TBN
                 return JuggleState.StageZero;
             }
         }
+
+        
         /// <summary>
         /// The value that directly influences the Juggle state.
         /// </summary>
@@ -122,7 +127,7 @@ namespace TBN
         /// to get a valid output right now you need to have the same number of ints as rectangles
         /// 
         /// to make a rectangle in "boxcode" use this format "/posx*posy*width*height//posx*posy*width*height/%"
-        /// 
+        /// k
         /// basically you start and end every rectangle with '/' and separate parameters by anything but '/' or '%' 
         /// 
         /// you can end the method after finishing a rectangle by inputting
@@ -252,7 +257,7 @@ namespace TBN
                     }
                     else
                     {
-                        Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + .4f);//gravity 
+                        Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 1f);//gravity 
                         AnchorPoint += Movement;//add to movement
                     }
                 }
@@ -275,7 +280,7 @@ namespace TBN
                 }
                 else
                 {
-                    Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 2f);//gravity 
+                    Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 1f);//gravity 
                     AnchorPoint += Movement;//add to movement
                 }
             }
@@ -303,8 +308,12 @@ namespace TBN
                 }
                 
             }
+            if (AnchorPoint.Y < 300 - MaxHeight)
+            {
+                MaxHeight = 300 - AnchorPoint.Y;
+            }
             sb.Draw(tex,new Rectangle(20 + (int)Input.StickPos.X * 10, 20 + -10* (int)Input.StickPos.Y, 10, 10), color: Color.Black);
-            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s, new Vector2(40, 40), Color.Black);
+            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s + "\nMax Height " + MaxHeight + "\nIntended Height" + (300-JumpHeight), new Vector2(40, 40), Color.Black);
         }
         public virtual void Draw(SpriteBatch sb)
         {
