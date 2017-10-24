@@ -31,6 +31,7 @@ namespace TBN
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            SpriteSheet.WhitePixel = Content.Load<Texture2D>("CharacterSpriteSheets/pixel");
             Boxman = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
             FrameDrawInfo[][] BoxmanRects= new FrameDrawInfo[9][];
             for (int i = 0; i < Boxman.Height/32; i++)

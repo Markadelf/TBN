@@ -329,17 +329,100 @@ namespace TBN
                 1.0f,
                 SpriteEffects.None,
                 0);
-
+            DrawLiterals(sb);
             /* sb.Draw(MySheet.Sheet,
                 position: AnchorPoint,
                 sourceRectangle: drawInfo.SourceRectangle,
                 origin: drawInfo.Origin); */
         }
 
+        /// <summary>
+        /// Draws all of the hitboxes and hurtboxes.
+        /// </summary>
+        /// <param name="sb"></param>
+        public virtual void DrawLiterals(SpriteBatch sb)
+        {
+            Rectangle[] hit = GetCurrentHitboxs();
+            for (int i = 0; i < hit.Length; i++)
+            {
+                sb.Draw(SpriteSheet.WhitePixel,
+                    hit[i],
+                    Color.Blue);
+            }
+            Rectangle[] hurt = GetCurrentHurtboxs();
+            for (int i = 0; i < hurt.Length; i++)
+            {
+                sb.Draw(SpriteSheet.WhitePixel,
+                    hurt[i],
+                    Color.Red);
+            }
+        }
+
+        /// <summary>
+        /// Gets the current Hitboxes in World Space
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle[] GetCurrentHitboxs()
+        {
+            int place = -1;
+            for(int i = 0; i < CurrentAction.Hitboxes.Count; i++)
+            {
+                if(CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
+                {
+                    place = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
 
+            if (place == -1)
+            {
+                return new Rectangle[] { };
+
+            }
+            Rectangle[] ret = new Rectangle[(CurrentAction.Hitboxes[place].Item2).Length]; ;
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Gets the current Hurtboxes in World Space
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle[] GetCurrentHurtboxs()
+        {
+            int place = -1;
+            for (int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
+            {
+                if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
+                {
+                    place = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
 
+            if (place == -1)
+            {
+                return new Rectangle[] { };
+
+            }
+            Rectangle[] ret = new Rectangle[(CurrentAction.Hurtboxes[place].Item2).Length]; ;
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]);
+            }
+            return ret;
+        }
 
         static Rectangle ConvertToWorldSpace(Vector2 anchor, Rectangle rect)
         {
