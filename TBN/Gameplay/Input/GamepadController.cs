@@ -21,22 +21,22 @@ namespace TBN.Gameplay.Input
 
         public override bool ButtonHeld(int HistoryLocation)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool ButtonPressed(int HistoryLocation)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override void RemapControls()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void Update()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

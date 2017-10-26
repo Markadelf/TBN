@@ -16,6 +16,7 @@ namespace TBN
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Character BoxMan;
+        Character OtherBoxMan;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -46,6 +47,7 @@ namespace TBN
                 BoxmanRects[i] = BoxmanRect;
             }
             BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
+            OtherBoxMan = new BoxMan(new Vector2(200,200), new GamepadController(0),new SpriteSheet(Boxman,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
             base.Initialize();
         }
@@ -82,7 +84,11 @@ namespace TBN
                 Exit();
             
             BoxMan.UpdateAction();
+            OtherBoxMan.UpdateAction();
             BoxMan.Move();
+            OtherBoxMan.Move();
+            BoxMan.TryAttack(OtherBoxMan);
+
 
             // TODO: Add your update logic here
 
@@ -100,6 +106,7 @@ namespace TBN
             // TODO: Add your drawing code here
             BoxMan.Debug(spriteBatch);
             BoxMan.Draw(spriteBatch);
+            OtherBoxMan.Draw(spriteBatch);
             base.Draw(gameTime);
             spriteBatch.End();
         }

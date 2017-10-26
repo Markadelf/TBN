@@ -27,6 +27,7 @@ namespace TBN
         public abstract float DamageMultiplier{ get; }
         #endregion
 
+        #region Properties
         /// <summary>
         /// keeps track of previous anchor
         /// </summary>
@@ -47,6 +48,7 @@ namespace TBN
         /// The spritesheet used to draw this character
         /// </summary>
         public SpriteSheet MySheet { get; set; }
+
         /// <summary>
         /// A list of all the projectiles belonging to this character.
         /// </summary>
@@ -57,23 +59,30 @@ namespace TBN
         /// </summary>
         public Dictionary<String, Action> MoveList;
 
-        /// <summary>
-        /// The current action the player is in
-        /// </summary>
-        public Action CurrentAction { get; set; }
+        
         /// <summary>
         /// floor height
         /// </summary>
         public int Floor { get; set; }
+
+        #region currentActionInfo
+        /// <summary>
+        /// Current action storage. This variable should not be changed in a direct manner.
+        /// </summary>
+        private Action _currentAction;
+        /// <summary>
+        /// The current action the player is in
+        /// </summary>
+        public Action CurrentAction { get { return _currentAction; } set { _currentAction = value; CurrentActionFrame = 0; CurrentActionHits = 0; } }
         /// <summary>
         /// The length in frames that have passed since the action was primed
         /// </summary>
         public int CurrentActionFrame { get; set; }
-
         /// <summary>
         /// Number of times the action has hit
         /// </summary>
         public int CurrentActionHits { get; set; }
+        #endregion
 
         /// <summary>
         /// Max Height of a jump used by go Idle 
@@ -104,6 +113,18 @@ namespace TBN
         /// The value that directly influences the Juggle state.
         /// </summary>
         public int JuggleMeter { get; set; }
+
+        #endregion
+
+        #region DebugDisplay
+        /// <summary>
+        /// Tells the literal drawer what color to draw the hurtboxes.
+        /// </summary>
+        public bool[] hitCollision { get; set; }
+
+
+        #endregion
+
 
 
         public Character(Vector2 anchor, InputController input, SpriteSheet sheet)
@@ -169,27 +190,11 @@ namespace TBN
             for(int i = 0; i < CurrentAction.ComboList.Count; i++)
             {
                 ActionCondition condition = CurrentAction.ComboList[i].Item1;
-                //Have we entered into the first possible frame for this yet?
-                if(condition.FirstFrame <= CurrentActionFrame)
+                //If we meet the conditon, transition into the new state
+                if (condition.Evaluate(this))
                 {
-                    //Did we fufill our hit obligations and are we before the last frame
-                    if ((!condition.MustHit) || (CurrentActionHits > 0) && condition.LastFrame >= CurrentActionFrame)
-                    {
-                        //Has the input been entered / other?
-                        if ((condition.InputCondition == null || condition.InputCondition(Input)) && (condition.MiscCondition == null || condition.MiscCondition()))
-                        {
-                            CurrentActionFrame = 0;
-                            CurrentActionHits = 0;
+
                             CurrentAction = CurrentAction.ComboList[i].Item2;
-                        }
-                   
-                    }
-                }
-                else
-                {
-                   
-                    //This break will only function if the Action Transitions are sorted.
-                    break;
                 }
             }
 
@@ -209,7 +214,7 @@ namespace TBN
             {
                 for (int i = 0; i < CurrentAction.MiscBehaviors.Count; i++)
                 {
-                    if (CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame)
+                    if (CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame || CurrentAction.MiscBehaviors[i].Item1 == -1)
                     {
                         CurrentAction.MiscBehaviors[i].Item2();
                     }
@@ -226,44 +231,32 @@ namespace TBN
         /// </summary>
         public void Move()
         {
-            
+
             #region Movement
 
-            //Check if there are any misc behaviors for this frame
+            //bool to see if we are in the realm of inertia
+            bool psuedoInertia = CurrentAction.FrameDisplacement.Count == 0;
+
+            //Check if there are any movement behaviors for this frame
 
             for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
             {
-
-                if (CurrentAction.FrameDisplacement[i].Item1 == CurrentActionFrame)
+                //If we are after that key frame, and either the next key frame doesn't exist or we are still before it.
+                if (CurrentAction.FrameDisplacement[i].Item1 <= CurrentActionFrame
+                    &&
+                    (i == CurrentAction.FrameDisplacement.Count - 1 || CurrentAction.FrameDisplacement[i + 1].Item1 > CurrentActionFrame))
                 {
-                    AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
-
-                }
-                else if(CurrentAction.FrameDisplacement.Count<1)
-                {//apply gravity friction and inertia
-                    if (OnGround)
-                    {
-
-                        if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
-                        {
-                            //if so truncate the previous movement into something usable
-                            Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
-                            AnchorPoint += Movement;//add the movement
-
-
-                        }
-
-                    }
+                    if (CurrentAction.FrameDisplacement[i].Item2.X != float.NaN)
+                        AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
                     else
-                    {
-                        Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 1f);//gravity 
-                        AnchorPoint += Movement;//add to movement
-                    }
+                        psuedoInertia = true;
+                    break;
                 }
                
             }
-            if (1 > CurrentAction.FrameDisplacement.Count)
-            {
+            //If we have no valid movent forced on us
+            if (psuedoInertia)
+            {//apply gravity friction and inertia
                 if (OnGround)
                 {
 
@@ -352,12 +345,55 @@ namespace TBN
             Rectangle[] hurt = GetCurrentHurtboxs();
             for (int i = 0; i < hurt.Length; i++)
             {
-                sb.Draw(SpriteSheet.WhitePixel,
-                    hurt[i],
-                    Color.Red);
+                if (hitCollision == null || !hitCollision[i])
+                {
+                    sb.Draw(SpriteSheet.WhitePixel,
+                        hurt[i],
+                        Color.Red);
+                }
+                else
+                {
+                    sb.Draw(SpriteSheet.WhitePixel,
+                        hurt[i],
+                        Color.Purple);
+                }
             }
         }
 
+        /// <summary>
+        /// This character attempts to hurt the other character.
+        /// </summary>
+        public virtual bool TryAttack(Character other)
+        {
+            bool hit = false;
+            Rectangle[] target = other.GetCurrentHitboxs();
+            Rectangle[] weapon = GetCurrentHurtboxs();
+            hitCollision = new bool[weapon.Count()];
+            for(int i = 0; i < target.Length; i++)
+            {
+                for (int j = 0; j < weapon.Length; j++)
+                {
+                    if (weapon[j].Intersects(target[i]))
+                    {
+                        if (CurrentActionHits < CurrentAction.MaxHits)
+                        {
+                            hit = true;
+                            CurrentActionHits++;
+                        }
+                        hitCollision[j] = true;
+                    }
+
+                }
+            }
+
+
+
+            return hit;
+        }
+
+
+
+        #region orientation
         /// <summary>
         /// Gets the current Hitboxes in World Space
         /// </summary>
@@ -437,6 +473,8 @@ namespace TBN
             rect.Y -= (int)anchor.Y;
             return rect;
         }
+        #endregion
+
 
     }
 }

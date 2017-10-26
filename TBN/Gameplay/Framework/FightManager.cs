@@ -13,13 +13,16 @@ namespace TBN
     public static class FightManager
     {
         public static Character PlayerOneMain { get; set; }
+        //Supports not implemented
         public static Character PlayerOneSupport { get; set; }
         public static Character PlayerTwoMain { get; set; }
+        //Supports not implemented
         public static Character PlayerTwoSupport { get; set; }
 
-        public static void Prime()
+        public static void Prime(Character a, Character b)
         {
-
+            PlayerOneMain = a;
+            PlayerTwoMain = b;
         }
 
 
