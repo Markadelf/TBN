@@ -16,6 +16,7 @@ namespace TBN
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Character BoxMan;
+        Character OtherBoxMan;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -31,6 +32,7 @@ namespace TBN
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            SpriteSheet.WhitePixel = Content.Load<Texture2D>("CharacterSpriteSheets/pixel");
             Boxman = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
             FrameDrawInfo[][] BoxmanRects= new FrameDrawInfo[9][];
             for (int i = 0; i < Boxman.Height/32; i++)
@@ -44,8 +46,10 @@ namespace TBN
                 }
                 BoxmanRects[i] = BoxmanRect;
             }
-            BoxMan = new AltBoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
+            BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
+            OtherBoxMan = new BoxMan(new Vector2(200,200), new DummyController(),new SpriteSheet(Boxman,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
+            FightManager.Prime(BoxMan, OtherBoxMan);
             base.Initialize();
         }
 
@@ -79,9 +83,11 @@ namespace TBN
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+
+            FightManager.Frame();
+
             
-            BoxMan.UpdateAction();
-            BoxMan.Move();
 
             // TODO: Add your update logic here
 
@@ -95,10 +101,10 @@ namespace TBN
         protected override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Wheat);
             // TODO: Add your drawing code here
             BoxMan.Debug(spriteBatch);
-            BoxMan.Draw(spriteBatch);
+            FightManager.Draw(spriteBatch);
             base.Draw(gameTime);
             spriteBatch.End();
         }

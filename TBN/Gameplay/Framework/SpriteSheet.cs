@@ -10,6 +10,10 @@ namespace TBN
     public class SpriteSheet
     {
         /// <summary>
+        /// A white pixel used to draw literal hitboxes
+        /// </summary>
+        public static Texture2D WhitePixel;
+        /// <summary>
         /// The texture to us to draw this spritesheet
         /// </summary>
         public Texture2D Sheet { get; set; }

@@ -20,10 +20,14 @@ namespace TBN
     }
     public abstract class Character
     {
+        #region Debug Values
+        float MaxHeight = 0;
+        #endregion
         #region Modifiers and Multipliers
         public abstract float DamageMultiplier{ get; }
         #endregion
 
+        #region Properties
         /// <summary>
         /// keeps track of previous anchor
         /// </summary>
@@ -44,6 +48,7 @@ namespace TBN
         /// The spritesheet used to draw this character
         /// </summary>
         public SpriteSheet MySheet { get; set; }
+
         /// <summary>
         /// A list of all the projectiles belonging to this character.
         /// </summary>
@@ -54,23 +59,30 @@ namespace TBN
         /// </summary>
         public Dictionary<String, Action> MoveList;
 
-        /// <summary>
-        /// The current action the player is in
-        /// </summary>
-        public Action CurrentAction { get; set; }
+        
         /// <summary>
         /// floor height
         /// </summary>
         public int Floor { get; set; }
+
+        #region currentActionInfo
+        /// <summary>
+        /// Current action storage. This variable should not be changed in a direct manner.
+        /// </summary>
+        private Action _currentAction;
+        /// <summary>
+        /// The current action the player is in
+        /// </summary>
+        public Action CurrentAction { get { return _currentAction; } set { _currentAction = value; CurrentActionFrame = 0; CurrentActionHits = 0; } }
         /// <summary>
         /// The length in frames that have passed since the action was primed
         /// </summary>
         public int CurrentActionFrame { get; set; }
-
         /// <summary>
         /// Number of times the action has hit
         /// </summary>
         public int CurrentActionHits { get; set; }
+        #endregion
 
         /// <summary>
         /// Max Height of a jump used by go Idle 
@@ -95,13 +107,62 @@ namespace TBN
                 return JuggleState.StageZero;
             }
         }
+
+        
         /// <summary>
         /// The value that directly influences the Juggle state.
         /// </summary>
         public int JuggleMeter { get; set; }
 
 
-        public Character(Vector2 anchor, InputController input, SpriteSheet sheet)
+        #region lifeForce
+        /// <summary>
+        /// The Max health a character can have
+        /// </summary>
+        public float MaxHealth { get; set; }
+        /// <summary>
+        /// Do not directly meddle with this value
+        /// </summary>
+        private float _health;
+        /// <summary>
+        /// The health of the character
+        /// </summary>
+        public float Health
+        {
+            get { return _health; }
+            set {
+                if (value < 0)
+                {
+                    _health = 0;
+                    return;
+                }
+                if (value > MaxHealth)
+                {
+                    _health = MaxHealth;
+                    return;
+                }
+                _health = value;
+            }
+        }
+
+        #endregion
+
+
+
+        #endregion
+
+        #region DebugDisplay
+        /// <summary>
+        /// Tells the literal drawer what color to draw the hurtboxes.
+        /// </summary>
+        public bool[] hitCollision { get; set; }
+
+
+        #endregion
+
+
+
+        public Character(Vector2 anchor, InputController input, SpriteSheet sheet, float health = 100)
         {
             PrevAnchor = anchor;
             PreviousMovement = Vector2.Zero;
@@ -115,7 +176,8 @@ namespace TBN
             JuggleMeter = 0;
             CurrentActionFrame = 0;
             CurrentActionHits = 0;
-            
+            MaxHealth = health;
+            _health = MaxHealth;
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -123,7 +185,7 @@ namespace TBN
         /// to get a valid output right now you need to have the same number of ints as rectangles
         /// 
         /// to make a rectangle in "boxcode" use this format "/posx*posy*width*height//posx*posy*width*height/%"
-        /// 
+        /// k
         /// basically you start and end every rectangle with '/' and separate parameters by anything but '/' or '%' 
         /// 
         /// you can end the method after finishing a rectangle by inputting
@@ -158,32 +220,15 @@ namespace TBN
         public void UpdateAction()
         {
             CurrentActionFrame++;
-            Input.Update();
+            //Input.Update();
             #region ActionTransition
             //Check if we are moving to a new Action
             for(int i = 0; i < CurrentAction.ComboList.Count; i++)
             {
-                ActionCondition condition = CurrentAction.ComboList[i].Item1;
-                //Have we entered into the first possible frame for this yet?
-                if(condition.FirstFrame <= CurrentActionFrame)
+                //If we meet the conditon, transition into the new state
+                if (CurrentAction.ComboList[i].Item1.Evaluate(this))
                 {
-                    //Did we fufill our hit obligations and are we before the last frame
-                    if ((!condition.MustHit) || (CurrentActionHits > 0) && condition.LastFrame >= CurrentActionFrame)
-                    {
-                        //Has the input been entered / other?
-                        if ((condition.InputCondition == null || condition.InputCondition(Input)) && (condition.MiscCondition == null || condition.MiscCondition()))
-                        {
-                            CurrentActionFrame = 0;
-                            CurrentActionHits = 0;
-                            CurrentAction = CurrentAction.ComboList[i].Item2;
-                        }
-                   
-                    }
-                }
-                else
-                {
-                   
-                    //This break will only function if the Action Transitions are sorted.
+                    CurrentAction = CurrentAction.ComboList[i].Item2;
                     break;
                 }
             }
@@ -204,7 +249,7 @@ namespace TBN
             {
                 for (int i = 0; i < CurrentAction.MiscBehaviors.Count; i++)
                 {
-                    if (CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame)
+                    if (CurrentAction.MiscBehaviors[i].Item1 == CurrentActionFrame || CurrentAction.MiscBehaviors[i].Item1 == -1)
                     {
                         CurrentAction.MiscBehaviors[i].Item2();
                     }
@@ -221,44 +266,32 @@ namespace TBN
         /// </summary>
         public void Move()
         {
-            
+
             #region Movement
 
-            //Check if there are any misc behaviors for this frame
+            //bool to see if we are in the realm of inertia
+            bool psuedoInertia = CurrentAction.FrameDisplacement.Count == 0;
+
+            //Check if there are any movement behaviors for this frame
 
             for (int i = 0; i < CurrentAction.FrameDisplacement.Count; i++)
             {
-
-                if (CurrentAction.FrameDisplacement[i].Item1 == CurrentActionFrame)
+                //If we are after that key frame, and either the next key frame doesn't exist or we are still before it.
+                if (CurrentAction.FrameDisplacement[i].Item1 <= CurrentActionFrame
+                    &&
+                    (i == CurrentAction.FrameDisplacement.Count - 1 || CurrentAction.FrameDisplacement[i + 1].Item1 > CurrentActionFrame))
                 {
-                    AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
-
-                }
-                else if(CurrentAction.FrameDisplacement.Count<1)
-                {//apply gravity friction and inertia
-                    if (OnGround)
-                    {
-
-                        if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
-                        {
-                            //if so truncate the previous movement into something usable
-                            Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
-                            AnchorPoint += Movement;//add the movement
-
-
-                        }
-
-                    }
+                    if (CurrentAction.FrameDisplacement[i].Item2.X != float.NaN)
+                        AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
                     else
-                    {
-                        Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + .4f);//gravity 
-                        AnchorPoint += Movement;//add to movement
-                    }
+                        psuedoInertia = true;
+                    break;
                 }
                
             }
-            if (1 > CurrentAction.FrameDisplacement.Count)
-            {
+            //If we have no valid movent forced on us
+            if (psuedoInertia)
+            {//apply gravity friction and inertia
                 if (OnGround)
                 {
 
@@ -274,7 +307,7 @@ namespace TBN
                 }
                 else
                 {
-                    Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 2f);//gravity 
+                    Vector2 Movement = new Vector2(PreviousMovement.X, PreviousMovement.Y + 1f);//gravity 
                     AnchorPoint += Movement;//add to movement
                 }
             }
@@ -302,8 +335,12 @@ namespace TBN
                 }
                 
             }
+            if (AnchorPoint.Y < 300 - MaxHeight)
+            {
+                MaxHeight = 300 - AnchorPoint.Y;
+            }
             sb.Draw(tex,new Rectangle(20 + (int)Input.StickPos.X * 10, 20 + -10* (int)Input.StickPos.Y, 10, 10), color: Color.Black);
-            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s, new Vector2(40, 40), Color.Black);
+            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s + "\nMax Height " + MaxHeight + "\nIntended Height" + (300-JumpHeight), new Vector2(40, 40), Color.Black);
         }
         public virtual void Draw(SpriteBatch sb)
         {
@@ -315,22 +352,140 @@ namespace TBN
                 drawInfo.SourceRectangle,
                 Color.White,
                 0f,
-                new Vector2(),
-               // new Vector2(16+drawInfo.SourceRectangle.Width*CurrentActionFrame,32+drawInfo.SourceRectangle.Height*CurrentAction.ActionId),
+                new Vector2(0,0),
                 1.0f,
                 SpriteEffects.None,
                 0);
+            DrawLiterals(sb);
+        }
 
-            /* sb.Draw(MySheet.Sheet,
-                position: AnchorPoint,
-                sourceRectangle: drawInfo.SourceRectangle,
-                origin: drawInfo.Origin); */
+        /// <summary>
+        /// Draws all of the hitboxes and hurtboxes.
+        /// </summary>
+        /// <param name="sb"></param>
+        public virtual void DrawLiterals(SpriteBatch sb)
+        {
+            Rectangle[] hit = GetCurrentHitboxs();
+            for (int i = 0; i < hit.Length; i++)
+            {
+                sb.Draw(SpriteSheet.WhitePixel,
+                    hit[i],
+                    new Color(Color.Blue, .3f));
+            }
+            Rectangle[] hurt = GetCurrentHurtboxs();
+            for (int i = 0; i < hurt.Length; i++)
+            {
+                if (hitCollision == null || !hitCollision[i])
+                {
+                    sb.Draw(SpriteSheet.WhitePixel,
+                        hurt[i],
+                        new Color(Color.Red, .3f));
+                }
+                else
+                {
+                    sb.Draw(SpriteSheet.WhitePixel,
+                        hurt[i],
+                        new Color(Color.Purple, .3f));
+                }
+            }
+        }
+
+        /// <summary>
+        /// This character attempts to hurt the other character.
+        /// </summary>
+        public virtual bool TryAttack(Character other)
+        {
+            bool hit = false;
+            Rectangle[] target = other.GetCurrentHitboxs();
+            Rectangle[] weapon = GetCurrentHurtboxs();
+            hitCollision = new bool[weapon.Count()];
+            for(int i = 0; i < target.Length; i++)
+            {
+                for (int j = 0; j < weapon.Length; j++)
+                {
+                    if (weapon[j].Intersects(target[i]))
+                    {
+                        if (CurrentActionHits < CurrentAction.MaxHits)
+                        {
+                            hit = true;
+                            CurrentActionHits++;
+                        }
+                        hitCollision[j] = true;
+                    }
+
+                }
+            }
+            return hit;
         }
 
 
 
+        #region orientation
+        /// <summary>
+        /// Gets the current Hitboxes in World Space
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle[] GetCurrentHitboxs()
+        {
+            int place = -1;
+            for(int i = 0; i < CurrentAction.Hitboxes.Count; i++)
+            {
+                if(CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
+                {
+                    place = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
 
+            if (place == -1)
+            {
+                return new Rectangle[] { };
+
+            }
+            Rectangle[] ret = new Rectangle[(CurrentAction.Hitboxes[place].Item2).Length]; ;
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Gets the current Hurtboxes in World Space
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle[] GetCurrentHurtboxs()
+        {
+            int place = -1;
+            for (int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
+            {
+                if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
+                {
+                    place = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+
+            if (place == -1)
+            {
+                return new Rectangle[] { };
+
+            }
+            Rectangle[] ret = new Rectangle[(CurrentAction.Hurtboxes[place].Item2).Length]; ;
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]);
+            }
+            return ret;
+        }
 
         static Rectangle ConvertToWorldSpace(Vector2 anchor, Rectangle rect)
         {
@@ -345,6 +500,8 @@ namespace TBN
             rect.Y -= (int)anchor.Y;
             return rect;
         }
+        #endregion
+
 
     }
 }

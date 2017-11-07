@@ -8,15 +8,16 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TBN.Gameplay.Input
 {
-    class GamepadController : InputController
+    /// <summary>
+    /// A controller that produces no input
+    /// </summary>
+    class DummyController : InputController
     {
-
-
-        public GamepadController(int gamePadIndex)
+        /// <summary>
+        /// Creates a controller that produces no input
+        /// </summary>
+        public DummyController()
         {
-            GamePadCapabilities gamepad = GamePad.GetCapabilities(gamePadIndex);
-
-            //Ill need to talk with someone about how to implement this
         }
 
         public override bool ButtonHeld(int HistoryLocation)
@@ -31,12 +32,11 @@ namespace TBN.Gameplay.Input
 
         public override void RemapControls()
         {
-            //throw new NotImplementedException();
         }
 
+        
         public override void Update()
         {
-            //throw new NotImplementedException();
         }
     }
 }

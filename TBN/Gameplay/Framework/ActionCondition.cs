@@ -45,6 +45,22 @@ namespace TBN
             MiscCondition = misc;
         }
 
+        /// <summary>
+        /// Evaluates the condition
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public bool Evaluate(Character c)
+        {
+            return(
+                    //Have we entered into the first possible frame for this yet?
+                    (FirstFrame <= c.CurrentActionFrame) &&
+                    //Did we fufill our hit obligations and are we before the last frame
+                    ((!MustHit) || (c.CurrentActionHits > 0) && LastFrame >= c.CurrentActionFrame) &&
+                    //Has the input been entered / misc condition met?
+                    ((InputCondition == null || InputCondition(c.Input)) && (MiscCondition == null || MiscCondition()))
+                );
+        }
         
 
 
