@@ -114,6 +114,41 @@ namespace TBN
         /// </summary>
         public int JuggleMeter { get; set; }
 
+
+        #region lifeForce
+        /// <summary>
+        /// The Max health a character can have
+        /// </summary>
+        public float MaxHealth { get; set; }
+        /// <summary>
+        /// Do not directly meddle with this value
+        /// </summary>
+        private float _health;
+        /// <summary>
+        /// The health of the character
+        /// </summary>
+        public float Health
+        {
+            get { return _health; }
+            set {
+                if (value < 0)
+                {
+                    _health = 0;
+                    return;
+                }
+                if (value > MaxHealth)
+                {
+                    _health = MaxHealth;
+                    return;
+                }
+                _health = value;
+            }
+        }
+
+        #endregion
+
+
+
         #endregion
 
         #region DebugDisplay
@@ -127,7 +162,7 @@ namespace TBN
 
 
 
-        public Character(Vector2 anchor, InputController input, SpriteSheet sheet)
+        public Character(Vector2 anchor, InputController input, SpriteSheet sheet, float health = 100)
         {
             PrevAnchor = anchor;
             PreviousMovement = Vector2.Zero;
@@ -141,7 +176,8 @@ namespace TBN
             JuggleMeter = 0;
             CurrentActionFrame = 0;
             CurrentActionHits = 0;
-            
+            MaxHealth = health;
+            _health = MaxHealth;
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -184,17 +220,16 @@ namespace TBN
         public void UpdateAction()
         {
             CurrentActionFrame++;
-            Input.Update();
+            //Input.Update();
             #region ActionTransition
             //Check if we are moving to a new Action
             for(int i = 0; i < CurrentAction.ComboList.Count; i++)
             {
-                ActionCondition condition = CurrentAction.ComboList[i].Item1;
                 //If we meet the conditon, transition into the new state
-                if (condition.Evaluate(this))
+                if (CurrentAction.ComboList[i].Item1.Evaluate(this))
                 {
-
-                            CurrentAction = CurrentAction.ComboList[i].Item2;
+                    CurrentAction = CurrentAction.ComboList[i].Item2;
+                    break;
                 }
             }
 
@@ -317,16 +352,11 @@ namespace TBN
                 drawInfo.SourceRectangle,
                 Color.White,
                 0f,
-                new Vector2(),
-               // new Vector2(16+drawInfo.SourceRectangle.Width*CurrentActionFrame,32+drawInfo.SourceRectangle.Height*CurrentAction.ActionId),
+                new Vector2(0,0),
                 1.0f,
                 SpriteEffects.None,
                 0);
             DrawLiterals(sb);
-            /* sb.Draw(MySheet.Sheet,
-                position: AnchorPoint,
-                sourceRectangle: drawInfo.SourceRectangle,
-                origin: drawInfo.Origin); */
         }
 
         /// <summary>
@@ -340,7 +370,7 @@ namespace TBN
             {
                 sb.Draw(SpriteSheet.WhitePixel,
                     hit[i],
-                    Color.Blue);
+                    new Color(Color.Blue, .3f));
             }
             Rectangle[] hurt = GetCurrentHurtboxs();
             for (int i = 0; i < hurt.Length; i++)
@@ -349,13 +379,13 @@ namespace TBN
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
                         hurt[i],
-                        Color.Red);
+                        new Color(Color.Red, .3f));
                 }
                 else
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
                         hurt[i],
-                        Color.Purple);
+                        new Color(Color.Purple, .3f));
                 }
             }
         }
@@ -385,9 +415,6 @@ namespace TBN
 
                 }
             }
-
-
-
             return hit;
         }
 

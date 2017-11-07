@@ -55,7 +55,15 @@ namespace TBN
         /// <summary>
         /// The damage the move does.
         /// </summary>
-        public int Damage { get; set; }
+        public float Damage { get; set; }
+        /// <summary>
+        /// The modifier to scaling that the move applies
+        /// </summary>
+        public float ScalingMod { get; set; }
+        /// <summary>
+        /// Fuck if I know =P -Mark (Will update when I have a greater understanding of how red health works, feel free to update this if you know)
+        /// </summary>
+        public float RedHealth { get; set; }
 
         /// <summary>
         /// A basic constructor that initializes the combolist.
@@ -74,7 +82,7 @@ namespace TBN
             List<Tuple<int, Rectangle[]>> hitboxes, List<Tuple<int, Rectangle[]>> hurtboxes, List<Tuple<int, Vector2>> disp,
             int maxHits,
             List<Tuple<int, SimpleBehavior>> miscBehaviors,
-            int damage = 0)
+            float damage = 0, float scalMod = 0, float redHealth = 0)
         {
             ActionId = actionID;
             EndFrame = frameLength;
@@ -87,6 +95,8 @@ namespace TBN
             ComboList = new List<Tuple<ActionCondition, Action>>();
             MiscBehaviors = miscBehaviors;
             Damage = damage;
+            ScalingMod = scalMod;
+            RedHealth = redHealth;
         }
 
     }

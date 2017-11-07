@@ -13,11 +13,14 @@ namespace TBN
     public static class FightManager
     {
         public static Character PlayerOneMain { get; set; }
-        //Supports not implemented
-        public static Character PlayerOneSupport { get; set; }
+        public static bool PlayerOneHit { get; set; }
+
+
         public static Character PlayerTwoMain { get; set; }
-        //Supports not implemented
-        public static Character PlayerTwoSupport { get; set; }
+        public static bool PlayerTwoHit { get; set; }
+
+
+
 
         public static void Prime(Character a, Character b)
         {
@@ -28,6 +31,25 @@ namespace TBN
 
         public static void Frame()
         {
+            //Hit Logic
+            if(PlayerOneHit && !PlayerTwoHit)
+            {
+                //Strike()
+                //PlayerTwo.HitStun()
+            }
+            else if (!PlayerOneHit && PlayerTwoHit)
+            {
+                //Strike()
+                //PlayerOne.HitStun()
+            }
+            else if(PlayerOneHit && PlayerTwoHit)
+            {
+                //Strike()
+                //Strike()
+                //PlayerOneHitStun()
+                //PlayerTwo.HitStun()
+            }
+
             //Update the input manager
             InputManager.Update();
             
@@ -38,6 +60,10 @@ namespace TBN
             //Move the characters
             PlayerOneMain.Move();
             PlayerTwoMain.Move();
+
+            //Try Attacking
+            PlayerOneHit = PlayerOneMain.TryAttack(PlayerTwoMain);
+            PlayerTwoHit = PlayerTwoMain.TryAttack(PlayerOneMain);
 
         }
 

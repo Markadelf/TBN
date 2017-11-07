@@ -47,8 +47,9 @@ namespace TBN
                 BoxmanRects[i] = BoxmanRect;
             }
             BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
-            OtherBoxMan = new BoxMan(new Vector2(200,200), new GamepadController(0),new SpriteSheet(Boxman,BoxmanRects));
+            OtherBoxMan = new BoxMan(new Vector2(200,200), new DummyController(),new SpriteSheet(Boxman,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
+            FightManager.Prime(BoxMan, OtherBoxMan);
             base.Initialize();
         }
 
@@ -82,13 +83,11 @@ namespace TBN
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
-            BoxMan.UpdateAction();
-            OtherBoxMan.UpdateAction();
-            BoxMan.Move();
-            OtherBoxMan.Move();
-            BoxMan.TryAttack(OtherBoxMan);
 
+
+            FightManager.Frame();
+
+            
 
             // TODO: Add your update logic here
 
@@ -105,8 +104,7 @@ namespace TBN
             GraphicsDevice.Clear(Color.Wheat);
             // TODO: Add your drawing code here
             BoxMan.Debug(spriteBatch);
-            BoxMan.Draw(spriteBatch);
-            OtherBoxMan.Draw(spriteBatch);
+            FightManager.Draw(spriteBatch);
             base.Draw(gameTime);
             spriteBatch.End();
         }
