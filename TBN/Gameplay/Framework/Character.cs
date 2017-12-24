@@ -28,6 +28,7 @@ namespace TBN
         #endregion
 
         #region Properties
+        Vector2 FrameDisplacement;//total amount of movement for the frame used only outside of psudoinertia
         /// <summary>
         /// keeps track of previous anchor
         /// </summary>
@@ -164,6 +165,7 @@ namespace TBN
 
         public Character(Vector2 anchor, InputController input, SpriteSheet sheet, float health = 100)
         {
+            FrameDisplacement = Vector2.Zero;
             PrevAnchor = anchor;
             PreviousMovement = Vector2.Zero;
             MoveList = new Dictionary<string, Action>();
@@ -193,7 +195,7 @@ namespace TBN
         /// <param name="frameoccurances">the frames in which the hitboxes appear in order</param>
         /// <param name="boxcode">hitboxes in order of appearance</param>
         /// <returns></returns>
-        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect,int tilesize)
+        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect)
         {
 
             List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
@@ -208,6 +210,20 @@ namespace TBN
             return final;
         }
 
+        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances, Rectangle[] rect,int tilesize)
+        {
+
+            List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
+            int u = 0;
+            for (int i = 0; i < rect.Length; i++)
+            {
+                Tuple<int, Rectangle[]> Temp = new Tuple<int, Rectangle[]>(frameoccurances[i], new Rectangle[] { rect[i] });
+                final.Add(Temp);
+            }
+
+
+            return final;
+        }
         /// <summary>
         /// A function that should cause the character to got to the apropriate action post-combo.
         /// Called when CurrentActionFrame >= CurrentAction.EndFrame
@@ -220,6 +236,7 @@ namespace TBN
         public void UpdateAction()
         {
             CurrentActionFrame++;
+            FrameDisplacement = Vector2.Zero;//reset desplacement for this frame
             //Input.Update();
             #region ActionTransition
             //Check if we are moving to a new Action
@@ -370,7 +387,7 @@ namespace TBN
             {
                 sb.Draw(SpriteSheet.WhitePixel,
                     hit[i],
-                    new Color(Color.Blue, .3f));
+                    new Color(Color.Red, .1f));
             }
             Rectangle[] hurt = GetCurrentHurtboxs();
             for (int i = 0; i < hurt.Length; i++)
@@ -379,13 +396,13 @@ namespace TBN
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
                         hurt[i],
-                        new Color(Color.Red, .3f));
+                        new Color(Color.Green, .1f));
                 }
                 else
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
                         hurt[i],
-                        new Color(Color.Purple, .3f));
+                        new Color(Color.Purple, .1f));
                 }
             }
         }

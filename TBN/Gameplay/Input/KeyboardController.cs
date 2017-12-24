@@ -29,7 +29,7 @@ namespace TBN.Gameplay.Input
             InpCodes = new Keys[] {Keys.A, Keys.S, Keys.D, Keys.W, Keys.I, Keys.O, Keys.P, Keys.J, Keys.K, Keys.L, Keys.Enter,Keys.RightShift };
             current = Keyboard.GetState();
             previous = current;
-            InputManager.ActiveInputs.Add(this);
+           
             Dispose = false;
             StickPos = new Vector2(0, 0);
             InputHistory = new int[17];
@@ -80,7 +80,7 @@ namespace TBN.Gameplay.Input
                 {
                     InputHistory[i] = (ButtonPressed(i)) ? //is the key pressed 
                     0 : //if so set it to 0 
-                    InputHistory[i] + 1;//if so add one to the value if not it remains at 60
+                    InputHistory[i] + 1;//if not add one to the value if not it remains at 60
                 }
             }
             previous = current;

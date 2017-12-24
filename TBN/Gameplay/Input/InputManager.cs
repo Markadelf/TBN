@@ -40,9 +40,14 @@ namespace TBN
 
 
 
-        
 
-       
+        public static InputLogic GenerateLogic(int buttonIndex, int buffer)
+        {
+            int index = buttonIndex;
+            int buff = buffer;
+            return (InputController control) => { return control.InputHistory[index] < buff; };
+        }
+
         #region input methods
         /// <summary>
         /// Generates an Input logic delegate from parameters.

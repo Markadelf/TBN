@@ -12,7 +12,7 @@ namespace TBN
     public class Game1 : Game
     {
         public static SpriteFont Font;
-        Texture2D Boxman;
+        Texture2D BoxManSprite;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Character BoxMan;
@@ -33,12 +33,12 @@ namespace TBN
         {
             // TODO: Add your initialization logic here
             SpriteSheet.WhitePixel = Content.Load<Texture2D>("CharacterSpriteSheets/pixel");
-            Boxman = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
+            BoxManSprite = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
             FrameDrawInfo[][] BoxmanRects= new FrameDrawInfo[9][];
-            for (int i = 0; i < Boxman.Height/32; i++)
+            for (int i = 0; i < BoxManSprite.Height/32; i++)
             {
                 FrameDrawInfo[] BoxmanRect = new FrameDrawInfo[2];
-                for (int j = 0; j < Boxman.Width/32; j++)
+                for (int j = 0; j < BoxManSprite.Width/32; j++)
                 {
                     
                     BoxmanRect[j] = new FrameDrawInfo(new Rectangle(j*32,i*32,32,32), new Vector2(((j+1) * 32) - 16, (i+1) * 32));
@@ -46,8 +46,8 @@ namespace TBN
                 }
                 BoxmanRects[i] = BoxmanRect;
             }
-            BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(Boxman,BoxmanRects));
-            OtherBoxMan = new BoxMan(new Vector2(200,200), new DummyController(),new SpriteSheet(Boxman,BoxmanRects));
+            BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(BoxManSprite,BoxmanRects));
+            OtherBoxMan = new BoxMan(new Vector2(200,200), new DummyController(),new SpriteSheet(BoxManSprite,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
             FightManager.Prime(BoxMan, OtherBoxMan);
             base.Initialize();
