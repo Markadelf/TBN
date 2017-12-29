@@ -13,11 +13,9 @@ namespace TBN
     public static class FightManager
     {
         public static Character PlayerOneMain { get; set; }
-        public static bool PlayerOneHit { get; set; }
 
 
         public static Character PlayerTwoMain { get; set; }
-        public static bool PlayerTwoHit { get; set; }
 
 
 
@@ -32,23 +30,8 @@ namespace TBN
         public static void Frame()
         {
             //Hit Logic
-            if(PlayerOneHit && !PlayerTwoHit)
-            {
-                //Strike()
-                //PlayerTwo.HitStun()
-            }
-            else if (!PlayerOneHit && PlayerTwoHit)
-            {
-                //Strike()
-                //PlayerOne.HitStun()
-            }
-            else if(PlayerOneHit && PlayerTwoHit)
-            {
-                //Strike()
-                //Strike()
-                //PlayerOneHitStun()
-                //PlayerTwo.HitStun()
-            }
+            PlayerOneMain.ApplyStrike();
+            PlayerTwoMain.ApplyStrike();
 
             //Update the input manager
             InputManager.Update();
@@ -62,8 +45,8 @@ namespace TBN
             PlayerTwoMain.Move();
 
             //Try Attacking
-            PlayerOneHit = PlayerOneMain.TryAttack(PlayerTwoMain);
-            PlayerTwoHit = PlayerTwoMain.TryAttack(PlayerOneMain);
+            PlayerTwoMain.Struck = PlayerOneMain.TryAttack(PlayerTwoMain);
+            PlayerOneMain.Struck = PlayerTwoMain.TryAttack(PlayerOneMain);
 
         }
 

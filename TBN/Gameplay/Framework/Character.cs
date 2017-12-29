@@ -115,7 +115,6 @@ namespace TBN
         /// </summary>
         public int JuggleMeter { get; set; }
 
-
         #region lifeForce
         /// <summary>
         /// The Max health a character can have
@@ -148,7 +147,10 @@ namespace TBN
 
         #endregion
 
-
+        /// <summary>
+        /// When the character is struck the info is left here
+        /// </summary>
+        public AttackInfo Struck { get; set; }
 
         #endregion
 
@@ -180,6 +182,7 @@ namespace TBN
             CurrentActionHits = 0;
             MaxHealth = health;
             _health = MaxHealth;
+            Struck = null;
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -199,14 +202,11 @@ namespace TBN
         {
 
             List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
-            int u = 0;
             for (int i = 0; i < rect.Length; i++)
             {
                 Tuple<int, Rectangle[]> Temp = new Tuple<int, Rectangle[]>(frameoccurances[i], new Rectangle[]{ rect[i] });
                 final.Add(Temp);
             }
-            
-            
             return final;
         }
 
@@ -338,6 +338,11 @@ namespace TBN
             #endregion
         }
 
+        public void ApplyStrike()
+        {
+
+        }
+
 
 
         public virtual void Debug(SpriteBatch sb)
@@ -382,26 +387,26 @@ namespace TBN
         /// <param name="sb"></param>
         public virtual void DrawLiterals(SpriteBatch sb)
         {
-            Rectangle[] hit = GetCurrentHitboxs();
+            Tuple<int, Rectangle>[] hit = GetCurrentHitboxs();
             for (int i = 0; i < hit.Length; i++)
             {
                 sb.Draw(SpriteSheet.WhitePixel,
-                    hit[i],
+                    hit[i].Item2,
                     new Color(Color.Red, .1f));
             }
-            Rectangle[] hurt = GetCurrentHurtboxs();
+            Tuple<int, Rectangle>[] hurt = GetCurrentHurtboxs();
             for (int i = 0; i < hurt.Length; i++)
             {
                 if (hitCollision == null || !hitCollision[i])
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
-                        hurt[i],
+                        hurt[i].Item2,
                         new Color(Color.Green, .1f));
                 }
                 else
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
-                        hurt[i],
+                        hurt[i].Item2,
                         new Color(Color.Purple, .1f));
                 }
             }
@@ -410,22 +415,38 @@ namespace TBN
         /// <summary>
         /// This character attempts to hurt the other character.
         /// </summary>
-        public virtual bool TryAttack(Character other)
+        public virtual AttackInfo TryAttack(Character other)
         {
-            bool hit = false;
-            Rectangle[] target = other.GetCurrentHitboxs();
-            Rectangle[] weapon = GetCurrentHurtboxs();
+            AttackInfo hit = null;
+            Tuple<int, Rectangle>[] target = other.GetCurrentHitboxs();
+            Tuple<int, Rectangle>[] weapon = GetCurrentHurtboxs();
             hitCollision = new bool[weapon.Count()];
             for(int i = 0; i < target.Length; i++)
             {
                 for (int j = 0; j < weapon.Length; j++)
                 {
-                    if (weapon[j].Intersects(target[i]))
+                    if (weapon[j].Item2.Intersects(target[i].Item2))
                     {
                         if (CurrentActionHits < CurrentAction.MaxHits)
                         {
-                            hit = true;
-                            CurrentActionHits++;
+                            //Create attack info here
+                            AttackInfo temp = new AttackInfo(
+                                CurrentAction.MyType, CurrentAction.MyProperties, CurrentAction.JuggleMod,
+                                CurrentAction.Damage * DamageMultiplier * CurrentAction.HitBoxMultipliers[weapon[j].Item1],
+                                CurrentAction.ScalingMod,
+                                CurrentAction.RedHealth,
+                                CurrentAction.StunOnHit,
+                                CurrentAction.StunOnBlock
+                                );
+                            if (hit == null)
+                            {
+                                CurrentActionHits++;
+                                hit = temp;
+                            }
+                            else if (hit.Damage < temp.Damage)
+                            {
+                                hit = temp;
+                            }
                         }
                         hitCollision[j] = true;
                     }
@@ -442,31 +463,39 @@ namespace TBN
         /// Gets the current Hitboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Rectangle[] GetCurrentHitboxs()
+        public Tuple<int, Rectangle>[] GetCurrentHitboxs()
         {
-            int place = -1;
+            List<int> place = new List<int>();
             for(int i = 0; i < CurrentAction.Hitboxes.Count; i++)
             {
                 if(CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
                 {
-                    place = i;
+                    place.Add(i);
                 }
                 else
                 {
                     break;
                 }
             }
-
-
-            if (place == -1)
+            if (place.Count == 0)
             {
-                return new Rectangle[] { };
+                return new Tuple<int, Rectangle>[] { };
 
             }
-            Rectangle[] ret = new Rectangle[(CurrentAction.Hitboxes[place].Item2).Length]; ;
-            for (int i = 0; i < ret.Length; i++)
+            int length = 0;
+            for (int i = 0; i < place.Count; i++)
             {
-                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]);
+                length += (CurrentAction.Hitboxes[place[i]].Item2).Length;
+            }
+            int pos = 0;
+            Tuple<int, Rectangle>[] ret = new Tuple<int, Rectangle>[length];
+            for (int i = 0; i < place.Count; i++)
+            {
+                for (int j = 0; j < (CurrentAction.Hitboxes[place[i]].Item2).Length; j++)
+                {
+                    ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place[i]].Item2[j]));
+                    pos++;
+                }
             }
             return ret;
         }
@@ -475,31 +504,39 @@ namespace TBN
         /// Gets the current Hurtboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Rectangle[] GetCurrentHurtboxs()
+        public Tuple<int, Rectangle>[] GetCurrentHurtboxs()
         {
-            int place = -1;
+            List<int> place = new List<int>();
             for (int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
             {
                 if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
                 {
-                    place = i;
+                    place.Add(i);
                 }
                 else
                 {
                     break;
                 }
             }
-
-
-            if (place == -1)
+            if (place.Count == 0)
             {
-                return new Rectangle[] { };
+                return new Tuple<int, Rectangle>[] { };
 
             }
-            Rectangle[] ret = new Rectangle[(CurrentAction.Hurtboxes[place].Item2).Length]; ;
-            for (int i = 0; i < ret.Length; i++)
+            int length = 0;
+            for (int i = 0; i < place.Count; i++)
             {
-                ret[i] = ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]);
+                length += (CurrentAction.Hurtboxes[place[i]].Item2).Length;
+            }
+            int pos = 0;
+            Tuple<int, Rectangle>[] ret = new Tuple<int, Rectangle>[length];
+            for (int i = 0; i < place.Count; i++)
+            {
+                for (int j = 0; j < (CurrentAction.Hurtboxes[place[i]].Item2).Length; j++)
+                {
+                    ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place[i]].Item2[j]));
+                    pos++;
+                }
             }
             return ret;
         }
