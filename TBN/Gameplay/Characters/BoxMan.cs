@@ -80,20 +80,20 @@ namespace TBN.Gameplay.Characters
             if (OnGround)
             {
 
-                if (Input.InputHistory[1] <= 1)
+                if (Input.GetInput(InputButton.Down) <= 1)
                 {
                     CurrentAction = MoveList["Crouch"];
                 }
-                else if (Input.InputHistory[3] <= 1)
+                else if (Input.GetInput(InputButton.Back) <= 1)
                 {
                     CurrentAction = MoveList["BackWalk"];
 
                 }
-                else if (Input.InputHistory[4] <= 1)
+                else if (Input.GetInput(InputButton.Neutral) <= 1)
                 {
                     CurrentAction = MoveList["Idle"];
                 }
-                else if (Input.InputHistory[5] <= 1)
+                else if (Input.GetInput(InputButton.Forward) <= 1)
                 {
                     CurrentAction = MoveList["Walk"];
                 }

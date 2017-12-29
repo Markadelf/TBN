@@ -485,6 +485,7 @@ namespace TBN
         public void Reface()
         {
             FaceRight = Target.AnchorPoint.X > AnchorPoint.X;
+            Input.FaceRight = FaceRight;
         }
 
         /// <summary>

@@ -8,13 +8,51 @@ using Microsoft.Xna.Framework;
 
 namespace TBN
 {
+    public enum InputButton
+    {
+        DownBack = 0,
+        Down = 1,
+        DownForward = 2,
+        Back = 3,
+        Neutral = 4,
+        Forward = 5,
+        UpBack = 6,
+        Up = 7,
+        UpForward = 8,
+        Light = 9,
+        Medium = 10,
+        Heavy = 11,
+        Special = 12,
+        Short = 13,
+        RoundHouse = 14,
+        Start = 15,
+        Select = 16
+    }
     public abstract class InputController
     {
-        
+        /// <summary>
+        /// This lets the controller know if it should flip the stick
+        /// </summary>
+        public bool FaceRight { get; set; }
         /// <summary>
         /// Should always be between -1 and 1 on both axis.
         /// </summary>
         public Vector2 StickPos { get; set; }
+        /// <summary>
+        /// As Stick Pos but is flipped if facing left
+        /// </summary>
+        /// <returns></returns>
+        public Vector2 GetStickPos()
+        {
+            if (FaceRight)
+                return StickPos;
+            else
+            {
+                Vector2 temp = StickPos;
+                temp.X *= -1;
+                return temp;
+            }
+        }
 
         /// <summary>
         /// The History of inputs on this controller
@@ -34,6 +72,31 @@ namespace TBN
         public int[] InputHistory { get; set; }
 
         /// <summary>
+        /// As InputHistory but is flipped if facing left
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public int GetInput(InputButton input)
+        {
+            if (!FaceRight)
+            {
+                if (input == InputButton.DownBack)
+                    input = InputButton.DownForward;
+                else if (input == InputButton.Back)
+                    input = InputButton.Forward;
+                else if (input == InputButton.UpBack)
+                    input = InputButton.UpForward;
+                else if (input == InputButton.DownForward)
+                    input = InputButton.DownBack;
+                else if (input == InputButton.Forward)
+                    input = InputButton.Back;
+                else if (input == InputButton.UpForward)
+                    input = InputButton.UpBack;
+            }
+            return InputHistory[(int)input];
+        }
+
+        /// <summary>
         /// If true, the Input Manager will stop updating the controller
         /// </summary>
         public bool Dispose { get; set; }
@@ -49,6 +112,7 @@ namespace TBN
             {
                 InputHistory[i] = 100;
             }
+            FaceRight = true;
         }
         /// <summary>
         /// Returns true if the button at the InputHistory index is being held

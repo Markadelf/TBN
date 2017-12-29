@@ -45,7 +45,14 @@ namespace TBN
         {
             int index = buttonIndex;
             int buff = buffer;
-            return (InputController control) => { return control.InputHistory[index] < buff; };
+            return (InputController control) => { return control.GetInput((InputButton)index) < buff; };
+        }
+
+        public static InputLogic GenerateLogic(InputButton button, int buffer)
+        {
+            InputButton index = button;
+            int buff = buffer;
+            return (InputController control) => { return control.GetInput(index) < buff; };
         }
 
         #region input methods
@@ -60,7 +67,7 @@ namespace TBN
         {
             int index = buttonIndex;
             int buff = buffer;
-            return (InputController control) => { return ctrl.InputHistory[index] < buff; };
+            return (InputController control) => { return control.GetInput((InputButton)index) < buff; };
         }
         public static InputLogic Yes()
         {
@@ -71,7 +78,7 @@ namespace TBN
         /// </summary>
         public static bool Light(InputController control)
         {
-            return control.InputHistory[9] < 3;
+            return control.GetInput(InputButton.Light) < 3;
         }
 
         

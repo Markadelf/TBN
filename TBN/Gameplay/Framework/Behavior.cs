@@ -37,7 +37,7 @@ namespace TBN.Gameplay.Framework
                 List<Tuple<int, Vector2>> k = character.CurrentAction.FrameDisplacement;
                 for (int i = 0;i<k.Count;i++)
                 {
-                    k[i] =new Tuple<int,Vector2> (k[i].Item1,new Vector2(character.Input.StickPos.X * speed, k[i].Item2.Y));
+                    k[i] =new Tuple<int,Vector2> (k[i].Item1,new Vector2(character.Input.GetStickPos().X * speed, k[i].Item2.Y));
                 }
             };
         }
