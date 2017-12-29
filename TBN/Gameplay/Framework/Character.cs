@@ -42,6 +42,10 @@ namespace TBN
         /// </summary>
         public Vector2 AnchorPoint { get; set; }
         /// <summary>
+        /// True if the player is facing right.
+        /// </summary>
+        public bool FaceRight { get; set; }
+        /// <summary>
         /// The input controller that controls this character
         /// </summary>
         public InputController Input { get; set; }
@@ -151,7 +155,10 @@ namespace TBN
         /// When the character is struck the info is left here
         /// </summary>
         public AttackInfo Struck { get; set; }
-
+        /// <summary>
+        /// The character this one is facing
+        /// </summary>
+        public Character Target { get; set; }
         #endregion
 
         #region DebugDisplay
@@ -183,6 +190,8 @@ namespace TBN
             MaxHealth = health;
             _health = MaxHealth;
             Struck = null;
+            FaceRight = true;
+            Target = null;
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -283,7 +292,6 @@ namespace TBN
         /// </summary>
         public void Move()
         {
-
             #region Movement
 
             //bool to see if we are in the realm of inertia
@@ -299,7 +307,12 @@ namespace TBN
                     (i == CurrentAction.FrameDisplacement.Count - 1 || CurrentAction.FrameDisplacement[i + 1].Item1 > CurrentActionFrame))
                 {
                     if (CurrentAction.FrameDisplacement[i].Item2.X != float.NaN)
-                        AnchorPoint += CurrentAction.FrameDisplacement[i].Item2;
+                    {
+                        Vector2 temp = CurrentAction.FrameDisplacement[i].Item2;
+                        if (!FaceRight)
+                            temp.X = -temp.X;
+                        AnchorPoint += temp;
+                    }
                     else
                         psuedoInertia = true;
                     break;
@@ -338,9 +351,17 @@ namespace TBN
             #endregion
         }
 
+        /// <summary>
+        /// This is where all on hit logic occurs
+        /// </summary>
         public void ApplyStrike()
         {
+            if(Struck != null)
+            #region Apply Hit
+            {
 
+            }
+            #endregion
         }
 
 
@@ -367,16 +388,18 @@ namespace TBN
         public virtual void Draw(SpriteBatch sb)
         {
             FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame];
-
+            SpriteEffects flip = SpriteEffects.None;
+            if (!FaceRight)
+                flip = SpriteEffects.FlipHorizontally;
 
             sb.Draw(MySheet.Sheet,
                 AnchorPoint,
                 drawInfo.SourceRectangle,
                 Color.White,
                 0f,
-                new Vector2(0,0),
+                drawInfo.Origin,
                 1.0f,
-                SpriteEffects.None,
+                flip,
                 0);
             DrawLiterals(sb);
         }
@@ -459,6 +482,11 @@ namespace TBN
 
 
         #region orientation
+        public void Reface()
+        {
+            FaceRight = Target.AnchorPoint.X > AnchorPoint.X;
+        }
+
         /// <summary>
         /// Gets the current Hitboxes in World Space
         /// </summary>
@@ -493,7 +521,10 @@ namespace TBN
             {
                 for (int j = 0; j < (CurrentAction.Hitboxes[place[i]].Item2).Length; j++)
                 {
-                    ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place[i]].Item2[j]));
+                    if(FaceRight)
+                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place[i]].Item2[j]));
+                    else
+                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hitboxes[place[i]].Item2[j])));
                     pos++;
                 }
             }
@@ -534,7 +565,10 @@ namespace TBN
             {
                 for (int j = 0; j < (CurrentAction.Hurtboxes[place[i]].Item2).Length; j++)
                 {
-                    ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place[i]].Item2[j]));
+                    if (FaceRight)
+                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place[i]].Item2[j]));
+                    else
+                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hurtboxes[place[i]].Item2[j])));
                     pos++;
                 }
             }
@@ -554,6 +588,12 @@ namespace TBN
             rect.Y -= (int)anchor.Y;
             return rect;
         }
+
+        static Rectangle FaceLeft(Rectangle before)
+        {
+            return new Rectangle(-before.X - before.Width, before.Y, before.Width, before.Height);
+        }
+        
         #endregion
 
 

@@ -42,7 +42,7 @@ namespace TBN
                 {
                     
                     BoxmanRect[j] = new FrameDrawInfo(new Rectangle(j*32,i*32,32,32), new Vector2(((j+1) * 32) - 16, (i+1) * 32));
-                    
+                    BoxmanRect[j].Origin = new Vector2(16, 0);
                 }
                 BoxmanRects[i] = BoxmanRect;
             }

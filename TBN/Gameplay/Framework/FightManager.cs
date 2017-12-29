@@ -24,11 +24,17 @@ namespace TBN
         {
             PlayerOneMain = a;
             PlayerTwoMain = b;
+            PlayerOneMain.Target = PlayerTwoMain;
+            PlayerTwoMain.Target = PlayerOneMain;
         }
 
 
         public static void Frame()
         {
+            //Debug
+            PlayerOneMain.Reface();
+            PlayerTwoMain.Reface();
+
             //Hit Logic
             PlayerOneMain.ApplyStrike();
             PlayerTwoMain.ApplyStrike();
