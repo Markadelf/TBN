@@ -389,7 +389,7 @@ namespace TBN
         }
         public virtual void Draw(SpriteBatch sb)
         {
-            FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame];
+            FrameDrawInfo drawInfo = MySheet.FrameInfo[CurrentAction.ActionId][CurrentActionFrame % MySheet.FrameInfo[CurrentAction.ActionId].Length];
             SpriteEffects flip = SpriteEffects.None;
             if (!FaceRight)
                 flip = SpriteEffects.FlipHorizontally;

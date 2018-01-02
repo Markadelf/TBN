@@ -62,12 +62,16 @@ namespace TBN
             MoveList["Jump"].AddDisplacementKeyFrame(0, new Vector2(0, -5));
             MoveList["Jump"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
 
+            MoveList.Add("HitStun", new Action(1));
+            MoveList["HitStun"].MyProperties = ActionProperties.AllowGrab;
+
+
             MoveList.Add("Attack", new Action(0));
             MoveList["Attack"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Attack"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Attack"].EndFrame = 2;
             MoveList["Attack"].MaxHits = 1;
-            MoveList["Attack"].StunOnHit = 10;
+            MoveList["Attack"].StunOnHit = 30;
             MoveList["Attack"].StunOnBlock = 5;
 
 
@@ -132,7 +136,22 @@ namespace TBN
         //Inherited neccesities
         public override void ApplyStrike()
         {
-            //throw new NotImplementedException();
+            switch (Struck.MyType)
+            {
+                case AttackType.Strike:
+                    CurrentAction = MoveList["HitStun"];
+                    CurrentAction.EndFrame = Struck.StunOnHit;
+                    Struck = null;
+                    break;
+                case AttackType.GrabVertical:
+                    break;
+                case AttackType.GrabHorizontal:
+                    break;
+                case AttackType.Stagger:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public override void GoIdle()
