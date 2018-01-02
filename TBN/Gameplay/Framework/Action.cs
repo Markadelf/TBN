@@ -9,6 +9,14 @@ namespace TBN
 {
     public delegate void SimpleBehavior();
 
+    [Flags] public enum ActionProperties
+    {
+        None = 0,
+        AllowBlock = 1,
+        AllowGrab = 2,
+        Unblockable = 4,
+        Loops = 8
+    }
 
     public class Action
     {
@@ -19,7 +27,7 @@ namespace TBN
         /// <summary>
         /// The properties of a given attack
         /// </summary>
-        public AttackProperties MyProperties { get; set; }
+        public ActionProperties MyProperties { get; set; }
         /// <summary>
         /// The ID for this action used to look up drawing information.
         /// </summary>
@@ -43,11 +51,15 @@ namespace TBN
         /// <summary>
         /// A list of multipliers on the hitbox damage
         /// </summary>
-        public List<float> HitBoxMultipliers { get; set; }
+        public List<float[]> HitBoxMultipliers { get; set; }
         /// <summary>
         /// A list of hurtboxes and their start frames in order
         /// </summary>
         public List<Tuple<int, Rectangle[]>> Hurtboxes { get; set; }
+        /// <summary>
+        /// A list of multipliers on the hitbox damage
+        /// </summary>
+        public List<float[]> HurtBoxMultipliers { get; set; }
         /// <summary>
         /// A list of movement vectors and their start frames in order
         /// </summary>
@@ -106,9 +118,10 @@ namespace TBN
             int maxHits,
             List<Tuple<int, SimpleBehavior>> miscBehaviors,
             float damage = 0, float scalMod = 0, float redHealth = 0,
-            AttackProperties prop = AttackProperties.None,
+            ActionProperties prop = ActionProperties.None,
             AttackType type = AttackType.Strike,
-            List<float> hitboxMultipliers = null,
+            List<float[]> hitboxMultipliers = null,
+            List<float[]> hurtboxMultipliers = null, 
             int stunOnHit = 0,
             int stunOnBlock = 0)
         {
@@ -130,15 +143,95 @@ namespace TBN
             //Multipliers
             HitBoxMultipliers = hitboxMultipliers;
             if (HitBoxMultipliers == null)
-                HitBoxMultipliers = new List<float>();
-            while(HitBoxMultipliers.Count < hitboxes.Count)
+                HitBoxMultipliers = new List<float[]>();
+            while (HitBoxMultipliers.Count < hitboxes.Count)
             {
-                HitBoxMultipliers.Add(1);
+                HitBoxMultipliers.Add(new float[hitboxes[HitBoxMultipliers.Count].Item2.Length]);
+                for (int i = 0; i < HitBoxMultipliers[HitBoxMultipliers.Count-1].Length; i++)
+                {
+                    HitBoxMultipliers[HitBoxMultipliers.Count - 1][i] = 1;
+                }
+            }
+            HurtBoxMultipliers = hurtboxMultipliers;
+            if (HurtBoxMultipliers == null)
+                HurtBoxMultipliers = new List<float[]>();
+            while (HurtBoxMultipliers.Count < hurtboxes.Count)
+            {
+                HurtBoxMultipliers.Add(new float[hurtboxes[HurtBoxMultipliers.Count].Item2.Length]);
+                for (int i = 0; i < HurtBoxMultipliers[HurtBoxMultipliers.Count - 1].Length; i++)
+                {
+                    HurtBoxMultipliers[HurtBoxMultipliers.Count - 1][i] = 1;
+                }
             }
             StunOnHit = stunOnHit;
             StunOnBlock = stunOnBlock;
         }
 
+        /// <summary>
+        /// Creates a blank action that does nothing
+        /// </summary>
+        /// <param name="actionID">The id for the action</param>
+        public Action(int actionID, int length = 1)
+        {
+            ActionId = actionID;
+            EndFrame = length;
+            JuggleNumber = 0;
+            JuggleMod = 0;
+            Hitboxes = new List<Tuple<int, Rectangle[]>>();
+            Hurtboxes = new List<Tuple<int, Rectangle[]>>();
+            FrameDisplacement = new List<Tuple<int, Vector2>>();
+            MaxHits = 0;
+            ComboList = new List<Tuple<ActionCondition, Action>>();
+            MiscBehaviors = null;
+            Damage = 0;
+            ScalingMod = 0;
+            RedHealth = 0;
+            MyProperties = ActionProperties.None;
+            MyType = AttackType.Strike;
+            //Multipliers
+            HitBoxMultipliers = new List<float[]>();
+            HurtBoxMultipliers = new List<float[]>();
+            StunOnHit = 0;
+            StunOnBlock = 0;
+        }
+
+        public void AddHitboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
+        {
+            int index = Hitboxes.Count - 1;
+            if (index < 0)
+                index = 0;
+            while (index > 0 && startFrame > Hitboxes[index].Item1)
+            {
+                index--;
+            }
+            Hitboxes.Insert(index, new Tuple<int, Rectangle[]>(startFrame, boxes));
+            HitBoxMultipliers.Insert(index, multipliers);
+        }
+
+        public void AddHurtboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
+        {
+            int index = Hurtboxes.Count - 1;
+            if (index < 0)
+                index = 0;
+            while (index > 0 && startFrame > Hurtboxes[index].Item1)
+            {
+                index--;
+            }
+            Hurtboxes.Insert(index, new Tuple<int, Rectangle[]>(startFrame, boxes));
+            HurtBoxMultipliers.Insert(index, multipliers);
+        }
+
+        public void AddDisplacementKeyFrame(int startFrame, Vector2 displacement)
+        {
+            int index = FrameDisplacement.Count - 1;
+            if (index < 0)
+                index = 0;
+            while (index > 0 && startFrame > FrameDisplacement[index].Item1)
+            {
+                index--;
+            }
+            FrameDisplacement.Insert(index, new Tuple<int, Vector2>(startFrame, displacement));
+        }
 
     }
 }

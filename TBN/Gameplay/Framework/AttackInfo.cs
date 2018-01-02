@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace TBN
 {
-    [Flags] public enum AttackProperties
-    {
-        None = 0
-    }
+
 
     public enum AttackType
     {
@@ -28,7 +25,7 @@ namespace TBN
         /// <summary>
         /// The properties of a given attack
         /// </summary>
-        public AttackProperties MyProperties { get; set; }
+        public ActionProperties MyProperties { get; set; }
         /// <summary>
         /// The value we add to the jugglemeter upon a hit
         /// </summary>
@@ -68,7 +65,7 @@ namespace TBN
         /// <param name="rHealth"></param>
         /// <param name="stunOnHit"> Amount of Hitstun on Hit. Also frame count for grabs. Also stagger on hit</param>
         /// <param name="stunOnBlock">Amount of Hitstun on block. Also Stagger on block</param>
-        public AttackInfo(AttackType type, AttackProperties prop, int jMod, float dam, float sMod, float rHealth, int stunOnHit, int stunOnBlock = 0)
+        public AttackInfo(AttackType type, ActionProperties prop, int jMod, float dam, float sMod, float rHealth, int stunOnHit, int stunOnBlock = 0)
         {
             MyType = type;
             MyProperties = prop;

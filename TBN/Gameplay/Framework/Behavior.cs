@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TBN.Gameplay.Framework
+namespace TBN
 {
     public static class Behavior
     {

@@ -36,8 +36,8 @@ namespace TBN
             PlayerTwoMain.Reface();
 
             //Hit Logic
-            PlayerOneMain.ApplyStrike();
-            PlayerTwoMain.ApplyStrike();
+            PlayerOneMain.TryApplyStrike();
+            PlayerTwoMain.TryApplyStrike();
 
             //Update the input manager
             InputManager.Update();

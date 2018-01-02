@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -264,7 +262,11 @@ namespace TBN
             {
                 CurrentActionFrame = 0;
                 CurrentActionHits = 0;
-                GoIdle();
+                if (CurrentAction.MyProperties.HasFlag(ActionProperties.Loops))
+                {
+                    CurrentAction = CurrentAction;
+                }
+                else { GoIdle(); }
             }
 
             #endregion
@@ -354,17 +356,17 @@ namespace TBN
         /// <summary>
         /// This is where all on hit logic occurs
         /// </summary>
-        public void ApplyStrike()
+        public void TryApplyStrike()
         {
             if(Struck != null)
             #region Apply Hit
             {
-
+                ApplyStrike();
             }
             #endregion
         }
 
-
+        public abstract void ApplyStrike();
 
         public virtual void Debug(SpriteBatch sb)
         {
@@ -378,12 +380,12 @@ namespace TBN
                 }
                 
             }
-            if (AnchorPoint.Y < 300 - MaxHeight)
+            if (AnchorPoint.Y < Floor - MaxHeight)
             {
-                MaxHeight = 300 - AnchorPoint.Y;
+                MaxHeight = Floor - AnchorPoint.Y;
             }
             sb.Draw(tex,new Rectangle(20 + (int)Input.StickPos.X * 10, 20 + -10* (int)Input.StickPos.Y, 10, 10), color: Color.Black);
-            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s + "\nMax Height " + MaxHeight + "\nIntended Height" + (300-JumpHeight), new Vector2(40, 40), Color.Black);
+            sb.DrawString(Game1.Font, "Anchor Point "+AnchorPoint.ToString()+"\nButton pushed "+ s + "\nMax Height " + MaxHeight + "\nIntended Height" + (Floor-JumpHeight), new Vector2(40, 40), Color.Black);
         }
         public virtual void Draw(SpriteBatch sb)
         {
@@ -410,14 +412,14 @@ namespace TBN
         /// <param name="sb"></param>
         public virtual void DrawLiterals(SpriteBatch sb)
         {
-            Tuple<int, Rectangle>[] hit = GetCurrentHitboxs();
+            Tuple<float, Rectangle>[] hit = GetCurrentHitboxs();
             for (int i = 0; i < hit.Length; i++)
             {
                 sb.Draw(SpriteSheet.WhitePixel,
                     hit[i].Item2,
                     new Color(Color.Red, .1f));
             }
-            Tuple<int, Rectangle>[] hurt = GetCurrentHurtboxs();
+            Tuple<float, Rectangle>[] hurt = GetCurrentHurtboxs();
             for (int i = 0; i < hurt.Length; i++)
             {
                 if (hitCollision == null || !hitCollision[i])
@@ -441,8 +443,8 @@ namespace TBN
         public virtual AttackInfo TryAttack(Character other)
         {
             AttackInfo hit = null;
-            Tuple<int, Rectangle>[] target = other.GetCurrentHitboxs();
-            Tuple<int, Rectangle>[] weapon = GetCurrentHurtboxs();
+            Tuple<float, Rectangle>[] target = other.GetCurrentHitboxs();
+            Tuple<float, Rectangle>[] weapon = GetCurrentHurtboxs();
             hitCollision = new bool[weapon.Count()];
             for(int i = 0; i < target.Length; i++)
             {
@@ -455,7 +457,7 @@ namespace TBN
                             //Create attack info here
                             AttackInfo temp = new AttackInfo(
                                 CurrentAction.MyType, CurrentAction.MyProperties, CurrentAction.JuggleMod,
-                                CurrentAction.Damage * DamageMultiplier * CurrentAction.HitBoxMultipliers[weapon[j].Item1],
+                                CurrentAction.Damage * DamageMultiplier * weapon[j].Item1  * target[i].Item1,
                                 CurrentAction.ScalingMod,
                                 CurrentAction.RedHealth,
                                 CurrentAction.StunOnHit,
@@ -492,42 +494,34 @@ namespace TBN
         /// Gets the current Hitboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Tuple<int, Rectangle>[] GetCurrentHitboxs()
+        public Tuple<float, Rectangle>[] GetCurrentHitboxs()
         {
-            List<int> place = new List<int>();
+            int place = -1;
             for(int i = 0; i < CurrentAction.Hitboxes.Count; i++)
             {
                 if(CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
                 {
-                    place.Add(i);
+                    place = i;
                 }
                 else
                 {
                     break;
                 }
             }
-            if (place.Count == 0)
+            if (place == -1)
             {
-                return new Tuple<int, Rectangle>[] { };
+                return new Tuple<float, Rectangle>[] { };
 
             }
-            int length = 0;
-            for (int i = 0; i < place.Count; i++)
-            {
-                length += (CurrentAction.Hitboxes[place[i]].Item2).Length;
-            }
             int pos = 0;
-            Tuple<int, Rectangle>[] ret = new Tuple<int, Rectangle>[length];
-            for (int i = 0; i < place.Count; i++)
+            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hitboxes[place].Item2.Length];
+            for (int i = 0; i < (CurrentAction.Hitboxes[place].Item2).Length; i++)
             {
-                for (int j = 0; j < (CurrentAction.Hitboxes[place[i]].Item2).Length; j++)
-                {
-                    if(FaceRight)
-                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place[i]].Item2[j]));
-                    else
-                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hitboxes[place[i]].Item2[j])));
-                    pos++;
-                }
+                if(FaceRight)
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]));
+                else
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hitboxes[place].Item2[i])));
+                pos++;
             }
             return ret;
         }
@@ -536,42 +530,34 @@ namespace TBN
         /// Gets the current Hurtboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Tuple<int, Rectangle>[] GetCurrentHurtboxs()
+        public Tuple<float, Rectangle>[] GetCurrentHurtboxs()
         {
-            List<int> place = new List<int>();
+            int place = -1;
             for (int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
             {
                 if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
                 {
-                    place.Add(i);
+                    place = i;
                 }
                 else
                 {
                     break;
                 }
             }
-            if (place.Count == 0)
+            if (place == -1)
             {
-                return new Tuple<int, Rectangle>[] { };
+                return new Tuple<float, Rectangle>[] { };
 
             }
-            int length = 0;
-            for (int i = 0; i < place.Count; i++)
-            {
-                length += (CurrentAction.Hurtboxes[place[i]].Item2).Length;
-            }
             int pos = 0;
-            Tuple<int, Rectangle>[] ret = new Tuple<int, Rectangle>[length];
-            for (int i = 0; i < place.Count; i++)
+            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hurtboxes[place].Item2.Length];
+            for (int i = 0; i < (CurrentAction.Hurtboxes[place].Item2).Length; i++)
             {
-                for (int j = 0; j < (CurrentAction.Hurtboxes[place[i]].Item2).Length; j++)
-                {
-                    if (FaceRight)
-                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place[i]].Item2[j]));
-                    else
-                        ret[pos] = new Tuple<int, Rectangle>(i, ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hurtboxes[place[i]].Item2[j])));
-                    pos++;
-                }
+                if (FaceRight)
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]));
+                else
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hurtboxes[place].Item2[i])));
+                pos++;
             }
             return ret;
         }

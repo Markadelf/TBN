@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TBN.Gameplay.Input
+namespace TBN
 {
     class KeyboardController : InputController
     {
@@ -69,7 +69,7 @@ namespace TBN.Gameplay.Input
             
             for (int i = 0; i < InputHistory.Length; i++)
             {
-                if (i < 8)
+                if (i < 9)
                 {
                     InputHistory[i]++;
                     int stickindex = (int)(4 + StickPos.X + 3 * StickPos.Y);

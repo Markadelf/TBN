@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TBN.Gameplay.Input
+namespace TBN
 {
     class GamepadController : InputController
     {

@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TBN.Gameplay.Characters;
-using TBN.Gameplay.Input;
 
 namespace TBN
 {
@@ -42,7 +40,7 @@ namespace TBN
                 {
                     
                     BoxmanRect[j] = new FrameDrawInfo(new Rectangle(j*32,i*32,32,32), new Vector2(((j+1) * 32) - 16, (i+1) * 32));
-                    BoxmanRect[j].Origin = new Vector2(16, 0);
+                    BoxmanRect[j].Origin = new Vector2(16, 32);
                 }
                 BoxmanRects[i] = BoxmanRect;
             }

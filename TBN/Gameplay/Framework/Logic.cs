@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TBN.Gameplay.Framework
+namespace TBN
 {
     class Logic
     {
@@ -19,13 +19,29 @@ namespace TBN.Gameplay.Framework
         {
             return () =>
             {
-                if (c.AnchorPoint.Y < height)
-                {
-                    return true;
-                }
-                return false;
+                return (c.AnchorPoint.Y < height);
+            }; 
+        }
+        public static SimpleLogic OverHeight(Character c, int height)
+        {
+            return () =>
+            {
+                return (c.AnchorPoint.Y > height);
             };
-            
+        }
+        public static SimpleLogic UnderJumpHeight(Character c)
+        {
+            return () =>
+            {
+                return (c.AnchorPoint.Y > c.JumpHeight);
+            };
+        }
+        public static SimpleLogic OverJumpHeight(Character c)
+        {
+            return () =>
+            {
+                return (c.AnchorPoint.Y < c.JumpHeight);
+            };
         }
         public static SimpleLogic OnGround(Character character)
         {

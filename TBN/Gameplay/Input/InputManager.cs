@@ -69,6 +69,7 @@ namespace TBN
             int buff = buffer;
             return (InputController control) => { return control.GetInput((InputButton)index) < buff; };
         }
+        
         public static InputLogic Yes()
         {
             return (InputController control) => true;
@@ -80,8 +81,18 @@ namespace TBN
         {
             return control.GetInput(InputButton.Light) < 3;
         }
-
-        
+        public static InputLogic And(InputLogic a, InputLogic b, InputLogic c = null, InputLogic d = null)
+        {
+            return (InputController control) => { return a(control) && b(control) && (c == null || c(control)) && (d == null || d(control)); };
+        }
+        public static InputLogic Or(InputLogic a, InputLogic b, InputLogic c = null, InputLogic d = null)
+        {
+            return (InputController control) => { return a(control) || b(control) || (c != null && c(control)) || (d != null && d(control)); };
+        }
+        public static InputLogic Not(InputLogic a)
+        {
+            return (InputController control) => { return !a(control); };
+        }
 
 
         #endregion
