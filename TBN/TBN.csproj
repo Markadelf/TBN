@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Gameplay\Characters\CodedCharacter.cs" />
+    <Compile Include="Gameplay\Characters\StandardCharacter.cs" />
     <Compile Include="Gameplay\Framework\AttackInfo.cs" />
     <Compile Include="Gameplay\Characters\BoxMan.cs" />
     <Compile Include="Gameplay\Framework\Behavior.cs" />
