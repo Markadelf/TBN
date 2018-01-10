@@ -76,7 +76,7 @@ namespace TBN
         /// <summary>
         /// The current action the player is in
         /// </summary>
-        public Action CurrentAction { get { return _currentAction; } set { _currentAction = value; CurrentActionFrame = 0; CurrentActionHits = 0; } }
+        public Action CurrentAction { get { return _currentAction; } set { _currentAction = value; CurrentActionFrame = 0; CurrentActionHits = 0; CurrentActionLastHit = -1; } }
         /// <summary>
         /// The length in frames that have passed since the action was primed
         /// </summary>
@@ -85,6 +85,14 @@ namespace TBN
         /// Number of times the action has hit
         /// </summary>
         public int CurrentActionHits { get; set; }
+        /// <summary>
+        /// The index of the last key frame that has hit the opponent
+        /// </summary>
+        public int CurrentActionLastHit { get; set; }
+        /// <summary>
+        /// The index of the keyframe that was last used to calculate hurtboxes.
+        /// </summary>
+        private int _hurtboxKeyFrameIndex;
         #endregion
 
         /// <summary>
@@ -185,11 +193,13 @@ namespace TBN
             JuggleMeter = 0;
             CurrentActionFrame = 0;
             CurrentActionHits = 0;
+            CurrentActionLastHit = -1;
             MaxHealth = health;
             _health = MaxHealth;
             Struck = null;
             FaceRight = true;
             Target = null;
+            _hurtboxKeyFrameIndex = 0;
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -262,6 +272,7 @@ namespace TBN
             {
                 CurrentActionFrame = 0;
                 CurrentActionHits = 0;
+                CurrentActionLastHit = -1;
                 if (CurrentAction.MyProperties.HasFlag(ActionProperties.Loops))
                 {
                     CurrentAction = CurrentAction;
@@ -452,9 +463,11 @@ namespace TBN
                 {
                     if (weapon[j].Item2.Intersects(target[i].Item2))
                     {
+                        // This if statement will be expanded to determine whether or not a move hits.
+                        // An Attack info should never go through if the other player doesn't respond in some manner to the strike.
                         if (CurrentActionHits < CurrentAction.MaxHits)
                         {
-                            //Create attack info here
+                            // Create attack info here
                             AttackInfo temp = new AttackInfo(
                                 CurrentAction.MyType, CurrentAction.MyProperties, CurrentAction.JuggleMod,
                                 CurrentAction.Damage * DamageMultiplier * weapon[j].Item1  * target[i].Item1,
@@ -467,6 +480,7 @@ namespace TBN
                             {
                                 CurrentActionHits++;
                                 hit = temp;
+                                CurrentActionLastHit = _hurtboxKeyFrameIndex;
                             }
                             else if (hit.Damage < temp.Damage)
                             {
@@ -537,7 +551,8 @@ namespace TBN
             {
                 if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
                 {
-                    place = i;
+                    if(CurrentActionLastHit < i)
+                        place = i;
                 }
                 else
                 {
@@ -549,6 +564,7 @@ namespace TBN
                 return new Tuple<float, Rectangle>[] { };
 
             }
+            _hurtboxKeyFrameIndex = place;
             int pos = 0;
             Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hurtboxes[place].Item2.Length];
             for (int i = 0; i < (CurrentAction.Hurtboxes[place].Item2).Length; i++)

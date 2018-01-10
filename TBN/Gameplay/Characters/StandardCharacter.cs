@@ -16,36 +16,42 @@ namespace TBN
         {
             //Define States
             MoveList.Add("Idle", new Action(0));
-            MoveList["Idle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["Idle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Walk", new Action(4));
             MoveList["Walk"].AddDisplacementKeyFrame(0, new Vector2(8, 0));
-            MoveList["Walk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["Walk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("BackWalk", new Action(5));
             MoveList["BackWalk"].AddDisplacementKeyFrame(0, new Vector2(-8, 0));
-            MoveList["BackWalk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["BackWalk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Crouch", new Action(2));
-            MoveList["Crouch"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["Crouch"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Precrouch", new Action(1));
 
             MoveList.Add("CrouchGetup", new Action(3));
 
             MoveList.Add("PreJump", new Action(6));
-            MoveList["PreJump"].MiscBehaviors = new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(0, Behavior.SetJumpHeight(this, 120)) };
+            MoveList["PreJump"].AddMiscBehavior(0, Behavior.SetJumpHeight(this, 120));
 
             MoveList.Add("JumpIdle", new Action(8));
-            MoveList["JumpIdle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["JumpIdle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Jump", new Action(7));
-            MoveList["Jump"].MiscBehaviors = new List<Tuple<int, SimpleBehavior>> { new Tuple<int, SimpleBehavior>(-1, Behavior.OffGround(this)), new Tuple<int, SimpleBehavior>(-1, Behavior.FreeMoveX(this, 6)) };
+            MoveList["Jump"].AddMiscBehavior(-1, Behavior.OffGround(this));
+            MoveList["Jump"].AddMiscBehavior(-1, Behavior.FreeMoveX(this, 6));
             MoveList["Jump"].AddDisplacementKeyFrame(0, new Vector2(0, -5));
-            MoveList["Jump"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock | ActionProperties.AllowGrab;
+            MoveList["Jump"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
+            //Damaged states
             MoveList.Add("HitStun", new Action(1));
-            MoveList["HitStun"].MyProperties = ActionProperties.AllowGrab;
+            MoveList.Add("GrabbedH", new Action(1));
+            MoveList.Add("GrabbedV", new Action(1));
+            MoveList.Add("Stagger", new Action(1));
+            MoveList["Stagger"].AddMiscBehavior(-1, ()=> { if (InputManager.Mashing()(this.Input)) this.CurrentAction.EndFrame--; });
+            MoveList.Add("BlockStun", new Action(1));
 
             MoveList.Add("Attack", new Action(0));
 
@@ -110,21 +116,62 @@ namespace TBN
         //Inherited neccesities
         public override void ApplyStrike()
         {
-            switch (Struck.MyType)
+            //If blocked
+            if (Input.GetStickPos().X < 0 && !Struck.MyProperties.HasFlag(ActionProperties.Unblockable) && CurrentAction.MyProperties.HasFlag(ActionProperties.AllowBlock))
             {
-                case AttackType.Strike:
-                    CurrentAction = MoveList["HitStun"];
-                    CurrentAction.EndFrame = Struck.StunOnHit;
-                    Struck = null;
-                    break;
-                case AttackType.GrabVertical:
-                    break;
-                case AttackType.GrabHorizontal:
-                    break;
-                case AttackType.Stagger:
-                    break;
-                default:
-                    break;
+                switch (Struck.MyType)
+                {
+                    case AttackType.Strike:
+                        CurrentAction = MoveList["BlockStun"];
+                        CurrentAction.EndFrame = Struck.StunOnBlock;
+                        Struck = null;
+                        break;
+                    case AttackType.GrabVertical:
+                        CurrentAction = MoveList["GrabbedV"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    case AttackType.GrabHorizontal:
+                        CurrentAction = MoveList["GrabbedH"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    case AttackType.Stagger:
+                        CurrentAction = MoveList["BlockStun"];
+                        CurrentAction.EndFrame = Struck.StunOnBlock;
+                        Struck = null;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                switch (Struck.MyType)
+                {
+                    case AttackType.Strike:
+                        CurrentAction = MoveList["HitStun"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    case AttackType.GrabVertical:
+                        CurrentAction = MoveList["GrabbedV"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    case AttackType.GrabHorizontal:
+                        CurrentAction = MoveList["GrabbedH"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    case AttackType.Stagger:
+                        CurrentAction = MoveList["Stagger"];
+                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        Struck = null;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 

@@ -74,6 +74,7 @@ namespace TBN
         {
             return (InputController control) => true;
         }
+        
         /// <summary>
         /// Check if light has been pressed in the last three frames
         /// </summary>
@@ -81,6 +82,8 @@ namespace TBN
         {
             return control.GetInput(InputButton.Light) < 3;
         }
+
+        #region logic operations
         public static InputLogic And(InputLogic a, InputLogic b, InputLogic c = null, InputLogic d = null)
         {
             return (InputController control) => { return a(control) && b(control) && (c == null || c(control)) && (d == null || d(control)); };
@@ -92,6 +95,13 @@ namespace TBN
         public static InputLogic Not(InputLogic a)
         {
             return (InputController control) => { return !a(control); };
+        }
+        #endregion
+
+        //Not yet implemented
+        public static InputLogic Mashing()
+        {
+            return (InputController control) => { return true; };
         }
 
 

@@ -13,7 +13,7 @@ namespace TBN
     {
         None = 0,
         AllowBlock = 1,
-        AllowGrab = 2,
+        UnGrabbable = 2,
         Unblockable = 4,
         Loops = 8
     }
@@ -101,7 +101,7 @@ namespace TBN
         public int StunOnBlock { get; set; }
 
         /// <summary>
-        /// A basic constructor that initializes the combolist.
+        /// DEPRECIATED. A basic constructor that initializes the combolist. DEPRECIATED.
         /// </summary>
         /// <param name="actionID">The id that represents the action.</param>
         /// <param name="frameLength">Length in frames of the action.</param>
@@ -135,6 +135,8 @@ namespace TBN
             MaxHits = maxHits;
             ComboList = new List<Tuple<ActionCondition, Action>>();
             MiscBehaviors = miscBehaviors;
+            if(MiscBehaviors == null)
+                MiscBehaviors = new List<Tuple<int, SimpleBehavior>>();
             Damage = damage;
             ScalingMod = scalMod;
             RedHealth = redHealth;
@@ -182,7 +184,7 @@ namespace TBN
             FrameDisplacement = new List<Tuple<int, Vector2>>();
             MaxHits = 0;
             ComboList = new List<Tuple<ActionCondition, Action>>();
-            MiscBehaviors = null;
+            MiscBehaviors = new List<Tuple<int, SimpleBehavior>>();
             Damage = 0;
             ScalingMod = 0;
             RedHealth = 0;
@@ -195,12 +197,16 @@ namespace TBN
             StunOnBlock = 0;
         }
 
+        /// <summary>
+        /// Adds a hitbox keyframe to the action
+        /// </summary>
+        /// <param name="startFrame">Keyframe start frame</param>
+        /// <param name="boxes">The hitboxes</param>
+        /// <param name="multipliers">The multipliers for damage to this hitbox</param>
         public void AddHitboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
         {
-            int index = Hitboxes.Count - 1;
-            if (index < 0)
-                index = 0;
-            while (index > 0 && startFrame > Hitboxes[index].Item1)
+            int index = Hitboxes.Count;
+            while (index > 0 && startFrame < Hitboxes[index - 1].Item1)
             {
                 index--;
             }
@@ -208,12 +214,16 @@ namespace TBN
             HitBoxMultipliers.Insert(index, multipliers);
         }
 
+        /// <summary>
+        /// Adds a hurtbox keyframe to the action
+        /// </summary>
+        /// <param name="startFrame">Keyframe start frame</param>
+        /// <param name="boxes">The hurtboxes</param>
+        /// <param name="multipliers">The multipliers for damage to this hurtbox</param>
         public void AddHurtboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
         {
-            int index = Hurtboxes.Count - 1;
-            if (index < 0)
-                index = 0;
-            while (index > 0 && startFrame > Hurtboxes[index].Item1)
+            int index = Hurtboxes.Count;
+            while (index > 0 && startFrame < Hurtboxes[index - 1].Item1)
             {
                 index--;
             }
@@ -221,16 +231,34 @@ namespace TBN
             HurtBoxMultipliers.Insert(index, multipliers);
         }
 
+        /// <summary>
+        /// Adds a keyframe for displacement
+        /// </summary>
+        /// <param name="startFrame">Keyframe start frame</param>
+        /// <param name="displacement">Displacement for this period</param>
         public void AddDisplacementKeyFrame(int startFrame, Vector2 displacement)
         {
-            int index = FrameDisplacement.Count - 1;
-            if (index < 0)
-                index = 0;
-            while (index > 0 && startFrame > FrameDisplacement[index].Item1)
+            int index = FrameDisplacement.Count;
+            while (index > 0 && startFrame < FrameDisplacement[index - 1].Item1)
             {
                 index--;
             }
             FrameDisplacement.Insert(index, new Tuple<int, Vector2>(startFrame, displacement));
+        }
+
+        /// <summary>
+        /// Adds a Misc behavior at a particular frame
+        /// </summary>
+        /// <param name="frame">The frame the behavior occurs on. -1 for every frame.</param>
+        /// <param name="behavior">The behavior to occur</param>
+        public void AddMiscBehavior(int frame, SimpleBehavior behavior)
+        {
+            int index = MiscBehaviors.Count;
+            while (index > 0 && frame < MiscBehaviors[index - 1].Item1)
+            {
+                index--;
+            }
+            MiscBehaviors.Insert(index, new Tuple<int, SimpleBehavior>(frame, behavior));
         }
 
     }
