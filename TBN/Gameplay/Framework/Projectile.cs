@@ -24,10 +24,10 @@ namespace TBN
         /// <returns>The hitbox relative to the world</returns>
         Rectangle GetCurrentHitbox();
         /// <summary>
-        /// The event that occurs when a collision occurs
+        /// The event that checks for collisions and handles them
         /// </summary>
         /// <param name="other"></param>
-        void Hit(Character other);
+        void TryHit(Character other);
 
     }
 }

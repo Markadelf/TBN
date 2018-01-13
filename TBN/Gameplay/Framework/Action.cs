@@ -15,7 +15,8 @@ namespace TBN
         AllowBlock = 1,
         UnGrabbable = 2,
         Unblockable = 4,
-        Loops = 8
+        Loops = 8,
+        AirStagger = 16
     }
 
     public class Action

@@ -10,11 +10,11 @@ namespace TBN
 {
     public enum JuggleState
     {
-        StageZero,
-        StageOne,
-        StageTwo,
-        StageThree,
-        StageFour
+        StageZero = 0,
+        StageOne = 1,
+        StageTwo = 2,
+        StageThree = 3,
+        StageFour = 4
     }
     public abstract class Character
     {
@@ -110,12 +110,12 @@ namespace TBN
         public bool OnGround { get; set; }
 
         /// <summary>
-        /// NOT YET IMPLEMENTED
+        /// NOT YET FULLY IMPLEMENTED
         /// </summary>
         public JuggleState CurrentJuggleState {
             get
             {
-                return JuggleState.StageZero;
+                return (JuggleState)((JuggleMeter / 100) + 1);
             }
         }
 
@@ -167,6 +167,10 @@ namespace TBN
         public Character Target { get; set; }
         #endregion
 
+        #region
+        public List<Projectile> Projectiles { get; set; }
+        #endregion
+
         #region DebugDisplay
         /// <summary>
         /// Tells the literal drawer what color to draw the hurtboxes.
@@ -200,6 +204,7 @@ namespace TBN
             FaceRight = true;
             Target = null;
             _hurtboxKeyFrameIndex = 0;
+            Projectiles = new List<Projectile>();
         }
         /// <summary>
         /// make a set of hitboxes or hurtboxes
@@ -465,7 +470,7 @@ namespace TBN
                     {
                         // This if statement will be expanded to determine whether or not a move hits.
                         // An Attack info should never go through if the other player doesn't respond in some manner to the strike.
-                        if (CurrentActionHits < CurrentAction.MaxHits)
+                        if (CurrentActionHits < CurrentAction.MaxHits && JuggleMeter < CurrentAction.JuggleNumber)
                         {
                             // Create attack info here
                             AttackInfo temp = new AttackInfo(
@@ -494,6 +499,36 @@ namespace TBN
             }
             return hit;
         }
+
+
+
+
+        #region Projectile Logic
+        /// <summary>
+        /// Moves all of your projectiles
+        /// </summary>
+        public void MoveProjectiles()
+        {
+            for (int i = 0; i < Projectiles.Count; i++)
+            {
+                Projectiles[i].UpdatePosition();
+            }
+        }
+
+
+        /// <summary>
+        /// Trys to hit with all of your projectiles
+        /// </summary>
+        public void ProjectilesTryHit(Character other)
+        {
+            for (int i = 0; i < Projectiles.Count; i++)
+            {
+                Projectiles[i].TryHit(other);
+            }
+        }
+
+
+        #endregion
 
 
 

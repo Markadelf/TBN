@@ -12,10 +12,13 @@ namespace TBN
     /// </summary>
     public static class FightManager
     {
+
         public static Character PlayerOneMain { get; set; }
 
 
         public static Character PlayerTwoMain { get; set; }
+
+
 
 
 
@@ -50,9 +53,17 @@ namespace TBN
             PlayerOneMain.Move();
             PlayerTwoMain.Move();
 
+            //Move Projectiles
+            PlayerOneMain.MoveProjectiles();
+            PlayerTwoMain.MoveProjectiles();
+
             //Try Attacking
             PlayerTwoMain.Struck = PlayerOneMain.TryAttack(PlayerTwoMain);
             PlayerOneMain.Struck = PlayerTwoMain.TryAttack(PlayerOneMain);
+
+            //Try attacking with projectiles
+            PlayerOneMain.ProjectilesTryHit(PlayerTwoMain);
+            PlayerTwoMain.ProjectilesTryHit(PlayerOneMain);
 
         }
 

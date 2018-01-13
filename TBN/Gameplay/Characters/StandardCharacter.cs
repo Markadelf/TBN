@@ -47,16 +47,28 @@ namespace TBN
 
             //Damaged states
             MoveList.Add("HitStun", new Action(1));
-            MoveList.Add("GrabbedH", new Action(1));
-            MoveList.Add("GrabbedV", new Action(1));
-            MoveList.Add("Stagger", new Action(1));
-            MoveList["Stagger"].AddMiscBehavior(-1, ()=> { if (InputManager.Mashing()(this.Input)) this.CurrentAction.EndFrame--; });
+            MoveList["HitStun"].MyProperties = ActionProperties.UnGrabbable;
+
             MoveList.Add("BlockStun", new Action(1));
+            MoveList["BlockStun"].MyProperties = ActionProperties.UnGrabbable;
+
+            MoveList.Add("Stagger", new Action(1));
+            MoveList["Stagger"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList["Stagger"].AddMiscBehavior(-1, () => { if (InputManager.Mashing()(this.Input)) this.CurrentAction.EndFrame--; });
+
+            MoveList.Add("AirStagger", new Action(1));
+            MoveList["AirStagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Loops;
+
+            MoveList.Add("GrabbedH", new Action(1));
+            MoveList["GrabbedH"].MyProperties = ActionProperties.UnGrabbable;
+
+            MoveList.Add("GrabbedV", new Action(1));
+            MoveList["GrabbedV"].MyProperties = ActionProperties.UnGrabbable;
 
             MoveList.Add("Attack", new Action(0));
 
 
-            //Connections
+            #region Combo List
             MoveList["Idle"].ComboList = new List<Tuple<ActionCondition, Action>>{
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(9, 1), null), MoveList["Attack"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
@@ -65,6 +77,7 @@ namespace TBN
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, 
                     InputManager.Or(InputManager.GenerateLogic(Input,6,1),InputManager.GenerateLogic(Input,7,1),InputManager.GenerateLogic(Input,8,1)), 
                     null),MoveList["PreJump"]) };
+
             MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Attack"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), null),MoveList["Idle"]),
@@ -73,6 +86,7 @@ namespace TBN
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, 
                     InputManager.Or(InputManager.GenerateLogic(Input,6,1),InputManager.GenerateLogic(Input,7,1),InputManager.GenerateLogic(Input,8,1)), 
                     null),MoveList["PreJump"]) };
+
             MoveList["BackWalk"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Attack"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
@@ -81,15 +95,18 @@ namespace TBN
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, 
                     InputManager.Or(InputManager.GenerateLogic(Input,6,1),InputManager.GenerateLogic(Input,7,1),InputManager.GenerateLogic(Input,8,1)), 
                     null),MoveList["PreJump"]) };
+
             MoveList["Crouch"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), null), MoveList["BackWalk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), null), MoveList["CrouchGetup"])};
+
             MoveList["Precrouch"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), null), MoveList["BackWalk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), null), MoveList["CrouchGetup"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(2, 2, false, null, null), MoveList["Crouch"])};
+
             MoveList["CrouchGetup"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), null), MoveList["BackWalk"]),
@@ -97,16 +114,26 @@ namespace TBN
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, 
                     InputManager.Or(InputManager.GenerateLogic(Input,6,1),InputManager.GenerateLogic(Input,7,1),InputManager.GenerateLogic(Input,8,1)), 
                     null), MoveList["PreJump"])};
+
             MoveList["PreJump"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(2, 2, false, null, null), MoveList["Jump"]) };
+
             MoveList["JumpIdle"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Idle"]) };
+
             MoveList["Jump"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OverJumpHeight(this)), MoveList["JumpIdle"]),
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, 
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false,
                     InputManager.Not(InputManager.Or(InputManager.GenerateLogic(Input,6,1),InputManager.GenerateLogic(Input,7,1),InputManager.GenerateLogic(Input,8,1))),
                     null), MoveList["JumpIdle"])
             };
+
+            MoveList["AirStagger"].ComboList = new List<Tuple<ActionCondition, Action>> {
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Stagger"]) };
+
+            #endregion
+
+
             CurrentAction = MoveList["JumpIdle"];
         }
 
@@ -145,6 +172,7 @@ namespace TBN
                         break;
                 }
             }
+            //If not blocked
             else
             {
                 switch (Struck.MyType)
@@ -165,8 +193,15 @@ namespace TBN
                         Struck = null;
                         break;
                     case AttackType.Stagger:
-                        CurrentAction = MoveList["Stagger"];
-                        CurrentAction.EndFrame = Struck.StunOnHit;
+                        if (OnGround)
+                        {
+                            CurrentAction = MoveList["Stagger"];
+                        }
+                        else
+                        {
+                            CurrentAction = MoveList["AirStagger"];
+                        }
+                        MoveList["Stagger"].EndFrame = Struck.StunOnHit;
                         Struck = null;
                         break;
                     default:
