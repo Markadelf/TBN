@@ -39,7 +39,7 @@ namespace TBN
         /// </summary>
         public float ScalingMod { get; set; }
         /// <summary>
-        /// Fuck if I know =P -Mark (Will update when I have a greater understanding of how red health works, feel free to update this if you know)
+        /// Amount of RedHealth this move will add to its opponents healthbar
         /// </summary>
         public float RedHealth { get; set; }
         /// <summary>
@@ -62,7 +62,7 @@ namespace TBN
         /// <param name="jMod">The value we add to the jugglemeter upon a hit</param>
         /// <param name="dam">The damage the move does.</param>
         /// <param name="sMod">The modifier to scaling that the move applies</param>
-        /// <param name="rHealth"></param>
+        /// <param name="rHealth"> Amount of RedHealth this move will add to its opponents healthbar</param>
         /// <param name="stunOnHit"> Amount of Hitstun on Hit. Also frame count for grabs. Also stagger on hit</param>
         /// <param name="stunOnBlock">Amount of Hitstun on block. Also Stagger on block</param>
         public AttackInfo(AttackType type, ActionProperties prop, int jMod, float dam, float sMod, float rHealth, int stunOnHit, int stunOnBlock = 0)

@@ -143,6 +143,15 @@ namespace TBN
         //Inherited neccesities
         public override void ApplyStrike()
         {
+            //Things done always if we reach this point
+            JuggleMeter += Struck.JuggleMod;
+            Scaling *= Struck.ScalingMod;
+
+            if(Scaling < .2f)
+            {
+                Scaling = .2f;
+            }
+
             //If blocked
             if (Input.GetStickPos().X < 0 && !Struck.MyProperties.HasFlag(ActionProperties.Unblockable) && CurrentAction.MyProperties.HasFlag(ActionProperties.AllowBlock))
             {
@@ -175,6 +184,8 @@ namespace TBN
             //If not blocked
             else
             {
+                Health -= Struck.Damage * Scaling;
+                RedHealth += Struck.RedHealth * Scaling * Scaling;
                 switch (Struck.MyType)
                 {
                     case AttackType.Strike:

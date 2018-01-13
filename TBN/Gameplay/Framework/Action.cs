@@ -86,7 +86,7 @@ namespace TBN
         /// </summary>
         public float ScalingMod { get; set; }
         /// <summary>
-        /// Fuck if I know =P -Mark (Will update when I have a greater understanding of how red health works, feel free to update this if you know)
+        ///  Amount of RedHealth this move will add to its opponents healthbar
         /// </summary>
         public float RedHealth { get; set; }
         /// <summary>

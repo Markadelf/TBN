@@ -154,6 +154,28 @@ namespace TBN
                 _health = value;
             }
         }
+        /// <summary>
+        /// Do not touch this variable
+        /// </summary>
+        private float _redHealth;
+        /// <summary>
+        /// The Red Health that the character has on top of their current health
+        /// </summary>
+        public float RedHealth
+        {
+            get { return _redHealth; }
+            set {
+                _redHealth = value;
+                if (MaxHealth < _redHealth + _health)
+                    _redHealth = MaxHealth - _health;
+            }
+        }
+        /// <summary>
+        /// Scalling on the damage this character takes
+        /// </summary>
+        public float Scaling { get; set; }
+
+
 
         #endregion
 
