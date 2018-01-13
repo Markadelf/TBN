@@ -146,6 +146,7 @@ namespace TBN
             //Things done always if we reach this point
             JuggleMeter += Struck.JuggleMod;
             Scaling *= Struck.ScalingMod;
+            LastHitLight = Struck.MyProperties.HasFlag(ActionProperties.Light);
 
             if(Scaling < .2f)
             {

@@ -14,20 +14,29 @@ namespace TBN
         /// Updates Position
         /// </summary>
         void UpdatePosition();
+        
         /// <summary>
         /// Draws the projectile. Params need to be updated when we know what we need to pass in
         /// </summary>
         void Draw();
+        
         /// <summary>
         /// Returns the current hitbox of the projectile with a global position
         /// </summary>
         /// <returns>The hitbox relative to the world</returns>
         Rectangle GetCurrentHitbox();
+        
         /// <summary>
         /// The event that checks for collisions and handles them
         /// </summary>
-        /// <param name="other"></param>
+        /// <param name="other">The thing you are trying to hit</param>
         void TryHit(Character other);
+
+        /// <summary>
+        /// Returns true if the projectile is dead
+        /// </summary>
+        /// <returns>True if the projectile is dead</returns>
+        bool Dead();
 
     }
 }
