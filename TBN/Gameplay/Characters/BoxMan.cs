@@ -53,12 +53,68 @@ namespace TBN
             MoveList["Jump"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Jump"].EndFrame = 2;
 
-            MoveList["Attack"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
-            MoveList["Attack"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
-            MoveList["Attack"].EndFrame = 2;
-            MoveList["Attack"].MaxHits = 1;
-            MoveList["Attack"].StunOnHit = 30;
-            MoveList["Attack"].StunOnBlock = 5;
+            #region Light
+            //Action level Properties
+            MoveList["Light"].MyType = AttackType.Strike;
+            MoveList["Light"].MyProperties = ActionProperties.None;
+
+            //Move Specifics
+            MoveList["Light"].EndFrame = 2;
+            MoveList["Light"].MaxHits = 1;
+            MoveList["Light"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Light"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
+
+            //On Hit Properties
+            MoveList["Light"].Damage = 0;
+            MoveList["Light"].JuggleNumber = 300;
+            MoveList["Light"].JuggleMod = 0;
+            MoveList["Light"].StunOnHit = 30;
+            MoveList["Light"].StunOnBlock = 5;
+            MoveList["Light"].ScalingMod = 1;
+            MoveList["Light"].RedHealth = 0;
+            #endregion
+
+            #region Medium
+            //Action level Properties
+            MoveList["Medium"].MyType = AttackType.Strike;
+            MoveList["Medium"].MyProperties = ActionProperties.None;
+
+            //Move Specifics
+            MoveList["Medium"].EndFrame = 2;
+            MoveList["Medium"].MaxHits = 1;
+            MoveList["Medium"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Medium"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(32, -24, 16, 16) }, new float[] { 1 });
+
+            //On Hit Properties
+            MoveList["Medium"].Damage = 0;
+            MoveList["Medium"].JuggleNumber = 300;
+            MoveList["Medium"].JuggleMod = 0;
+            MoveList["Medium"].StunOnHit = 30;
+            MoveList["Medium"].StunOnBlock = 5;
+            MoveList["Medium"].ScalingMod = 1;
+            MoveList["Medium"].RedHealth = 0;
+            #endregion
+
+            #region Heavy
+            //Action level Properties
+            MoveList["Heavy"].MyType = AttackType.Strike;
+            MoveList["Heavy"].MyProperties = ActionProperties.None;
+
+            //Move Specifics
+            MoveList["Heavy"].EndFrame = 2;
+            MoveList["Heavy"].MaxHits = 1;
+            MoveList["Heavy"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Heavy"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -24, 16, 16) }, new float[] { 1 });
+
+            //On Hit Properties
+            MoveList["Heavy"].Damage = 0;
+            MoveList["Heavy"].JuggleNumber = 300;
+            MoveList["Heavy"].JuggleMod = 0;
+            MoveList["Heavy"].StunOnHit = 30;
+            MoveList["Heavy"].StunOnBlock = 5;
+            MoveList["Heavy"].ScalingMod = 1;
+            MoveList["Heavy"].RedHealth = 0;
+            #endregion
 
         }
     }

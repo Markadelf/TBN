@@ -12,6 +12,14 @@ namespace TBN
         //Properties
         public override float DamageMultiplier { get { return 1; } }
 
+        public virtual float WalkSpeed { get { return 8; } }
+        public virtual float BackWalkSpeed { get { return WalkSpeed; } }
+        public virtual int StandardJumpHeight { get { return 120; } }
+        public virtual int FreeMoveJump { get { return 6; } }
+        public virtual float JumpSpeed { get { return 5; } }
+
+
+
         public StandardCharacter(Vector2 anchor, InputController input, SpriteSheet sheet, float health = 100) : base(anchor, input, sheet, health)
         {
             //Define States
@@ -19,11 +27,11 @@ namespace TBN
             MoveList["Idle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Walk", new Action(4));
-            MoveList["Walk"].AddDisplacementKeyFrame(0, new Vector2(8, 0));
+            MoveList["Walk"].AddDisplacementKeyFrame(0, new Vector2(WalkSpeed, 0));
             MoveList["Walk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("BackWalk", new Action(5));
-            MoveList["BackWalk"].AddDisplacementKeyFrame(0, new Vector2(-8, 0));
+            MoveList["BackWalk"].AddDisplacementKeyFrame(0, new Vector2(-BackWalkSpeed, 0));
             MoveList["BackWalk"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Crouch", new Action(2));
@@ -34,43 +42,47 @@ namespace TBN
             MoveList.Add("CrouchGetup", new Action(3));
 
             MoveList.Add("PreJump", new Action(6));
-            MoveList["PreJump"].AddMiscBehavior(0, Behavior.SetJumpHeight(this, 120));
+            MoveList["PreJump"].AddMiscBehavior(0, Behavior.SetJumpHeight(this, StandardJumpHeight));
 
             MoveList.Add("JumpIdle", new Action(8));
             MoveList["JumpIdle"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             MoveList.Add("Jump", new Action(7));
             MoveList["Jump"].AddMiscBehavior(-1, Behavior.OffGround(this));
-            MoveList["Jump"].AddMiscBehavior(-1, Behavior.FreeMoveX(this, 6));
-            MoveList["Jump"].AddDisplacementKeyFrame(0, new Vector2(0, -5));
+            MoveList["Jump"].AddMiscBehavior(-1, Behavior.FreeMoveX(this, FreeMoveJump));
+            MoveList["Jump"].AddDisplacementKeyFrame(0, new Vector2(0, -JumpSpeed));
             MoveList["Jump"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
 
             //Damaged states
-            MoveList.Add("HitStun", new Action(1));
-            MoveList["HitStun"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList.Add("HitStun", new Action(3));
+            MoveList["HitStun"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
-            MoveList.Add("BlockStun", new Action(1));
-            MoveList["BlockStun"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList.Add("BlockStun", new Action(3));
+            MoveList["BlockStun"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
-            MoveList.Add("Stagger", new Action(1));
-            MoveList["Stagger"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList.Add("Stagger", new Action(3));
+            MoveList["Stagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
             MoveList["Stagger"].AddMiscBehavior(-1, () => { if (InputManager.Mashing()(this.Input)) this.CurrentAction.EndFrame--; });
 
-            MoveList.Add("AirStagger", new Action(1));
-            MoveList["AirStagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Loops;
+            MoveList.Add("AirStagger", new Action(3));
+            MoveList["AirStagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Loops | ActionProperties.Incapacitated;
 
-            MoveList.Add("GrabbedH", new Action(1));
-            MoveList["GrabbedH"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList.Add("GrabbedH", new Action(3));
+            MoveList["GrabbedH"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
-            MoveList.Add("GrabbedV", new Action(1));
-            MoveList["GrabbedV"].MyProperties = ActionProperties.UnGrabbable;
+            MoveList.Add("GrabbedV", new Action(3));
+            MoveList["GrabbedV"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
-            MoveList.Add("Attack", new Action(0));
+            MoveList.Add("Light", new Action(5));
+            MoveList.Add("Medium", new Action(5));
+            MoveList.Add("Heavy", new Action(5));
 
 
             #region Combo List
             MoveList["Idle"].ComboList = new List<Tuple<ActionCondition, Action>>{
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(9, 1), null), MoveList["Attack"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(9, 1), null), MoveList["Light"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(10, 1), null), MoveList["Medium"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(11, 1), null), MoveList["Heavy"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), null), MoveList["BackWalk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), null),MoveList["Precrouch"]),
@@ -79,7 +91,9 @@ namespace TBN
                     null),MoveList["PreJump"]) };
 
             MoveList["Walk"].ComboList = new List<Tuple<ActionCondition, Action>> {
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Attack"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Light"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(10, 1), null), MoveList["Medium"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(11, 1), null), MoveList["Heavy"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), null),MoveList["Idle"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), null), MoveList["BackWalk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), null),MoveList["Precrouch"]),
@@ -88,7 +102,9 @@ namespace TBN
                     null),MoveList["PreJump"]) };
 
             MoveList["BackWalk"].ComboList = new List<Tuple<ActionCondition, Action>> {
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Attack"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input, 9, 1), null), MoveList["Light"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(10, 1), null), MoveList["Medium"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(11, 1), null), MoveList["Heavy"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), null),MoveList["Walk"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,4,1), null), MoveList["Idle"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,1,1), null),MoveList["Precrouch"]),

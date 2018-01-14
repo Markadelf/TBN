@@ -12,12 +12,20 @@ namespace TBN
     [Flags] public enum ActionProperties
     {
         None = 0,
+        //Can you block while in this action
         AllowBlock = 1,
+        //Can you be Grabbed in this action
         UnGrabbable = 2,
+        //Is this action blockable
         Unblockable = 4,
+        //Does this action loop
         Loops = 8,
+        //Does this move apply AirStagger in the air
         AirStagger = 16,
-        Light = 32
+        //Is this move a light move?
+        Light = 32,
+        //Is this Action one in which you cannot preform tasks
+        Incapacitated = 64
     }
 
     public class Action
@@ -179,7 +187,7 @@ namespace TBN
         {
             ActionId = actionID;
             EndFrame = length;
-            JuggleNumber = 0;
+            JuggleNumber = 300;
             JuggleMod = 0;
             Hitboxes = new List<Tuple<int, Rectangle[]>>();
             Hurtboxes = new List<Tuple<int, Rectangle[]>>();
@@ -188,7 +196,7 @@ namespace TBN
             ComboList = new List<Tuple<ActionCondition, Action>>();
             MiscBehaviors = new List<Tuple<int, SimpleBehavior>>();
             Damage = 0;
-            ScalingMod = 0;
+            ScalingMod = 1;
             RedHealth = 0;
             MyProperties = ActionProperties.None;
             MyType = AttackType.Strike;
@@ -261,6 +269,23 @@ namespace TBN
                 index--;
             }
             MiscBehaviors.Insert(index, new Tuple<int, SimpleBehavior>(frame, behavior));
+        }
+
+        /// <summary>
+        /// The frame data for the current move on hit. Positive or negative.
+        /// </summary>
+        /// <returns>Amount of Frame Advantage (negative means the move has Frame Disadvantage)</returns>
+        public int FrameData()
+        {
+            int index = -1;
+            //Grab the last attack on the Action
+            for (index = Hurtboxes.Count - 1; index >= 0 && Hurtboxes[index].Item2.Length == 0; index--);
+            //If we are in a move that hits, return our FrameData
+            if (index > -1)
+                return StunOnHit - (EndFrame - Hurtboxes[index].Item1 - 1);
+            //A move without hurtboxes is neither plus nor minus.
+            else
+                return 0;
         }
 
     }

@@ -110,12 +110,15 @@ namespace TBN
         public bool OnGround { get; set; }
 
         /// <summary>
-        /// NOT YET FULLY IMPLEMENTED
+        /// The state of Juggle we are currently in.
         /// </summary>
         public JuggleState CurrentJuggleState {
             get
             {
-                return (JuggleState)((JuggleMeter / 100) + 1);
+                if (CurrentAction.MyProperties.HasFlag(ActionProperties.Incapacitated))
+                    return (JuggleState)((JuggleMeter / 100) + 1);
+                else
+                    return JuggleState.StageZero;
             }
         }
 
@@ -146,12 +149,13 @@ namespace TBN
                     _health = 0;
                     return;
                 }
-                if (value > MaxHealth)
+                _health = value;
+                if (_health > MaxHealth)
                 {
                     _health = MaxHealth;
-                    return;
                 }
-                _health = value;
+                if (MaxHealth < _redHealth + _health)
+                    _redHealth = MaxHealth - _health;
             }
         }
         /// <summary>
@@ -546,6 +550,11 @@ namespace TBN
             for (int i = 0; i < Projectiles.Count; i++)
             {
                 Projectiles[i].TryHit(other);
+                if (Projectiles[i].Dead())
+                {
+                    Projectiles.RemoveAt(i);
+                    i--;
+                }
             }
         }
 
