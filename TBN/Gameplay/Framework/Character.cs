@@ -496,7 +496,16 @@ namespace TBN
                     {
                         // This if statement will be expanded to determine whether or not a move hits.
                         // An Attack info should never go through if the other player doesn't respond in some manner to the strike.
-                        if (CurrentActionHits < CurrentAction.MaxHits && JuggleMeter < CurrentAction.JuggleNumber)
+                        if (
+                            //We haven't already hit too much
+                            CurrentActionHits < CurrentAction.MaxHits && 
+                            //We get the go ahead from the juggler
+                            JuggleMeter < CurrentAction.JuggleNumber &&
+                            //Either we aren't grabbing or we can grab
+                            ((CurrentAction.MyType != AttackType.GrabHorizontal && CurrentAction.MyType != AttackType.GrabVertical) 
+                                || !other.CurrentAction.MyProperties.HasFlag(ActionProperties.UnGrabbable))
+                            
+                            )
                         {
                             // Create attack info here
                             AttackInfo temp = new AttackInfo(
