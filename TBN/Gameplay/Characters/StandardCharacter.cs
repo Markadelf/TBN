@@ -248,6 +248,7 @@ namespace TBN
             {
                 CurrentAction = MoveList["JumpIdle"];
             }
+            Scaling = 1;
         }
     }
 }
