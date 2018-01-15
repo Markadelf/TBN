@@ -27,7 +27,10 @@ namespace TBN
         //Is this Action one in which you cannot preform tasks
         Incapacitated = 64,
         //Hyper Armor
-        Armored = 128
+        Armored = 128,
+        //High/Low
+        High = 256,
+        Low = 512
     }
 
     public class Action
@@ -112,6 +115,8 @@ namespace TBN
         /// </summary>
         public int StunOnBlock { get; set; }
 
+        public Vector2 Knockback { get; set; }
+
         /// <summary>
         /// DEPRECIATED. A basic constructor that initializes the combolist. DEPRECIATED.
         /// </summary>
@@ -179,6 +184,7 @@ namespace TBN
             }
             StunOnHit = stunOnHit;
             StunOnBlock = stunOnBlock;
+            Knockback = new Vector2();
         }
 
         /// <summary>
@@ -207,6 +213,7 @@ namespace TBN
             HitboxMultipliers = new List<float[]>();
             StunOnHit = 0;
             StunOnBlock = 0;
+            Knockback = new Vector2();
         }
 
         /// <summary>

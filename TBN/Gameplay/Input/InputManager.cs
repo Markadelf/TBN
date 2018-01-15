@@ -101,7 +101,14 @@ namespace TBN
         //Not yet implemented
         public static InputLogic Mashing()
         {
-            return (InputController control) => { return true; };
+            return (InputController control) => {
+                for(int i = 0; i < 15; i++)
+                {
+                    if (control.InputHistory[i] == 1)
+                        return true;
+                }
+                return false;
+            };
         }
 
 

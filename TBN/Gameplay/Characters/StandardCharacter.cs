@@ -56,9 +56,13 @@ namespace TBN
             //Damaged states
             MoveList.Add("HitStun", new Action(3));
             MoveList["HitStun"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
+            MoveList["HitStun"].AddDisplacementKeyFrame(0, new Vector2(0, 0));
+            MoveList["HitStun"].AddDisplacementKeyFrame(1, new Vector2(float.NaN, float.NaN));
 
             MoveList.Add("BlockStun", new Action(3));
             MoveList["BlockStun"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
+            MoveList["BlockStun"].AddDisplacementKeyFrame(0, new Vector2(0,0));
+            MoveList["BlockStun"].AddDisplacementKeyFrame(1, new Vector2(0,0));
 
             MoveList.Add("Stagger", new Action(3));
             MoveList["Stagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
@@ -164,6 +168,11 @@ namespace TBN
             Scaling *= Struck.ScalingMod;
             LastHitLight = Struck.MyProperties.HasFlag(ActionProperties.Light);
 
+            int direction = 1;
+            if (!FaceRight)
+                direction = -1;
+
+
             if(Scaling < .2f)
             {
                 Scaling = .2f;
@@ -172,31 +181,10 @@ namespace TBN
             //If blocked
             if (Input.GetStickPos().X < 0 && !Struck.MyProperties.HasFlag(ActionProperties.Unblockable) && CurrentAction.MyProperties.HasFlag(ActionProperties.AllowBlock))
             {
-                switch (Struck.MyType)
-                {
-                    case AttackType.Strike:
-                        CurrentAction = MoveList["BlockStun"];
-                        CurrentAction.EndFrame = Struck.StunOnBlock;
-                        Struck = null;
-                        break;
-                    case AttackType.GrabVertical:
-                        CurrentAction = MoveList["GrabbedV"];
-                        CurrentAction.EndFrame = Struck.StunOnHit;
-                        Struck = null;
-                        break;
-                    case AttackType.GrabHorizontal:
-                        CurrentAction = MoveList["GrabbedH"];
-                        CurrentAction.EndFrame = Struck.StunOnHit;
-                        Struck = null;
-                        break;
-                    case AttackType.Stagger:
-                        CurrentAction = MoveList["BlockStun"];
-                        CurrentAction.EndFrame = Struck.StunOnBlock;
-                        Struck = null;
-                        break;
-                    default:
-                        break;
-                }
+                CurrentAction = MoveList["BlockStun"];
+                CurrentAction.EndFrame = Struck.StunOnBlock;
+                CurrentAction.FrameDisplacement[0] = new Tuple<int,Vector2>(0, new Vector2(Struck.Knockback.X * .6f * direction, 0));
+                Struck = null;
             }
             //If not blocked
             else
@@ -208,6 +196,7 @@ namespace TBN
                     case AttackType.Strike:
                         CurrentAction = MoveList["HitStun"];
                         CurrentAction.EndFrame = Struck.StunOnHit;
+                        CurrentAction.FrameDisplacement[0] = new Tuple<int, Vector2>(0, new Vector2(Struck.Knockback.X * direction, Struck.Knockback.Y));
                         Struck = null;
                         break;
                     case AttackType.GrabVertical:

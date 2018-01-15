@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace TBN
 {
@@ -54,6 +55,10 @@ namespace TBN
         /// Also Stagger on block
         /// </summary>
         public int StunOnBlock { get; set; }
+        /// <summary>
+        /// Knockback on the move.
+        /// </summary>
+        public Vector2 Knockback { get; set; }
 
         /// <summary>
         /// 
@@ -66,7 +71,7 @@ namespace TBN
         /// <param name="rHealth"> Amount of RedHealth this move will add to its opponents healthbar</param>
         /// <param name="stunOnHit"> Amount of Hitstun on Hit. Also frame count for grabs. Also stagger on hit</param>
         /// <param name="stunOnBlock">Amount of Hitstun on block. Also Stagger on block</param>
-        public AttackInfo(AttackType type, ActionProperties prop, int jMod, float dam, float sMod, float rHealth, int stunOnHit, int stunOnBlock = 0)
+        public AttackInfo(AttackType type, ActionProperties prop, int jMod, float dam, float sMod, float rHealth, int stunOnHit, int stunOnBlock = 0, Vector2 knock  = new Vector2())
         {
             MyType = type;
             MyProperties = prop;
@@ -76,6 +81,7 @@ namespace TBN
             RedHealth = rHealth;
             StunOnHit = stunOnHit;
             StunOnBlock = stunOnBlock;
+            Knockback = knock;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace TBN
 {
@@ -12,13 +13,20 @@ namespace TBN
     /// </summary>
     public static class FightManager
     {
+        public static int ScreenWidth { get; set; }
+        public static int ScreenHeight { get; set; }
+
 
         public static Character PlayerOneMain { get; set; }
 
 
         public static Character PlayerTwoMain { get; set; }
 
-
+        static FightManager()
+        {
+            ScreenWidth = 480;
+            ScreenHeight = 360;
+        }
 
 
 
@@ -38,16 +46,20 @@ namespace TBN
             PlayerOneMain.Reface();
             PlayerTwoMain.Reface();
 
+            //Update the input manager
+            InputManager.Update();
+
+            //Update actions
+            PlayerOneMain.UpdateAction();
+            PlayerTwoMain.UpdateAction();
+
             //Hit Logic
             PlayerOneMain.TryApplyStrike();
             PlayerTwoMain.TryApplyStrike();
 
-            //Update the input manager
-            InputManager.Update();
-            
-            //Update actions
-            PlayerOneMain.UpdateAction();
-            PlayerTwoMain.UpdateAction();
+            //Misc Action Logic
+            PlayerOneMain.MiscActions();
+            PlayerTwoMain.MiscActions();
 
             //Move the characters
             PlayerOneMain.Move();
@@ -75,6 +87,11 @@ namespace TBN
         {
             PlayerOneMain.Draw(sb);
             PlayerTwoMain.Draw(sb);
+
+
+            sb.Draw(SpriteSheet.WhitePixel, new Rectangle(10, 10, (int)(200 * PlayerOneMain.Health / PlayerOneMain.MaxHealth), 10), Color.Red);
+            sb.Draw(SpriteSheet.WhitePixel, new Rectangle(280, 10, (int)(200 * PlayerTwoMain.Health / PlayerTwoMain.MaxHealth), 10), Color.Red);
+
         }
 
 

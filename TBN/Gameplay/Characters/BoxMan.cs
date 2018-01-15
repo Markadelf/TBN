@@ -56,7 +56,7 @@ namespace TBN
             #region Light
             //Action level Properties
             MoveList["Light"].MyType = AttackType.Strike;
-            MoveList["Light"].MyProperties = ActionProperties.None;
+            MoveList["Light"].MyProperties = ActionProperties.Light;
 
             //Move Specifics
             MoveList["Light"].EndFrame = 2;
@@ -65,13 +65,14 @@ namespace TBN
             MoveList["Light"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
 
             //On Hit Properties
-            MoveList["Light"].Damage = 0;
+            MoveList["Light"].Damage = 1;
             MoveList["Light"].JuggleNumber = 300;
             MoveList["Light"].JuggleMod = 0;
             MoveList["Light"].StunOnHit = 30;
             MoveList["Light"].StunOnBlock = 5;
             MoveList["Light"].ScalingMod = 1;
             MoveList["Light"].RedHealth = 0;
+            MoveList["Light"].Knockback = new Vector2(200, 0);
             #endregion
 
             #region Medium
@@ -86,7 +87,7 @@ namespace TBN
             MoveList["Medium"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(32, -24, 16, 16) }, new float[] { 1 });
 
             //On Hit Properties
-            MoveList["Medium"].Damage = 0;
+            MoveList["Medium"].Damage = 2;
             MoveList["Medium"].JuggleNumber = 300;
             MoveList["Medium"].JuggleMod = 0;
             MoveList["Medium"].StunOnHit = 30;
@@ -107,7 +108,7 @@ namespace TBN
             MoveList["Heavy"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -24, 16, 16) }, new float[] { 1 });
 
             //On Hit Properties
-            MoveList["Heavy"].Damage = 0;
+            MoveList["Heavy"].Damage = 3;
             MoveList["Heavy"].JuggleNumber = 300;
             MoveList["Heavy"].JuggleMod = 0;
             MoveList["Heavy"].StunOnHit = 30;

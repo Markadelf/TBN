@@ -310,9 +310,13 @@ namespace TBN
                 }
                 else { GoIdle(); }
             }
-
             #endregion
 
+            
+        }
+
+        public void MiscActions()
+        {
             #region MiscBehaviors
             //Check if there are any misc behaviors for this frame
             if (CurrentAction.MiscBehaviors != null)
@@ -325,9 +329,6 @@ namespace TBN
                     }
                 }
             }
-
-
-
             #endregion
         }
 
@@ -350,7 +351,7 @@ namespace TBN
                     &&
                     (i == CurrentAction.FrameDisplacement.Count - 1 || CurrentAction.FrameDisplacement[i + 1].Item1 > CurrentActionFrame))
                 {
-                    if (CurrentAction.FrameDisplacement[i].Item2.X != float.NaN)
+                    if (!float.IsNaN(CurrentAction.FrameDisplacement[i].Item2.X))
                     {
                         Vector2 temp = CurrentAction.FrameDisplacement[i].Item2;
                         if (!FaceRight)
@@ -389,6 +390,10 @@ namespace TBN
             {
                 OnGround = true;
                 AnchorPoint = new Vector2(AnchorPoint.X, Floor);
+            }
+            else
+            {
+                OnGround = false;
             }
             PreviousMovement = AnchorPoint -PrevAnchor;
             PrevAnchor = AnchorPoint;
@@ -484,6 +489,9 @@ namespace TBN
         /// </summary>
         public virtual AttackInfo TryAttack(Character other)
         {
+            int directionalMultiplier = 1;
+            if (!FaceRight)
+                directionalMultiplier = -1;
             AttackInfo hit = null;
             Tuple<float, Rectangle>[] hurtboxes = other.GetCurrentHurtboxs();
             Tuple<float, Rectangle>[] hitboxes = GetCurrentHitboxs();
@@ -509,12 +517,13 @@ namespace TBN
                         {
                             // Create attack info here
                             AttackInfo temp = new AttackInfo(
-                                CurrentAction.MyType, CurrentAction.MyProperties, CurrentAction.JuggleMod,
-                                CurrentAction.Damage * DamageMultiplier * hitboxes[j].Item1  * hurtboxes[i].Item1,
+                                CurrentAction.MyType, CurrentAction.MyProperties, (int)(CurrentAction.JuggleMod * hitboxes[j].Item1 * hurtboxes[i].Item1),
+                                CurrentAction.Damage * DamageMultiplier * hitboxes[j].Item1 * hurtboxes[i].Item1,
                                 CurrentAction.ScalingMod,
                                 CurrentAction.RedHealth,
                                 CurrentAction.StunOnHit,
-                                CurrentAction.StunOnBlock
+                                CurrentAction.StunOnBlock,
+                                new Vector2(CurrentAction.Knockback.X * directionalMultiplier, CurrentAction.Knockback.Y)
                                 );
                             if (hit == null)
                             {
