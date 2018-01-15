@@ -90,9 +90,9 @@ namespace TBN
         /// </summary>
         public int CurrentActionLastHit { get; set; }
         /// <summary>
-        /// The index of the keyframe that was last used to calculate hurtboxes.
+        /// The index of the keyframe that was last used to calculate Hitboxes.
         /// </summary>
-        private int _hurtboxKeyFrameIndex;
+        private int _hitboxKeyFrameIndex;
         #endregion
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace TBN
 
         #region DebugDisplay
         /// <summary>
-        /// Tells the literal drawer what color to draw the hurtboxes.
+        /// Tells the literal drawer what color to draw the Hitboxes.
         /// </summary>
         public bool[] hitCollision { get; set; }
 
@@ -229,11 +229,11 @@ namespace TBN
             Struck = null;
             FaceRight = true;
             Target = null;
-            _hurtboxKeyFrameIndex = 0;
+            _hitboxKeyFrameIndex = 0;
             Projectiles = new List<Projectile>();
         }
         /// <summary>
-        /// make a set of hitboxes or hurtboxes
+        /// make a set of Hurtboxes or Hitboxes
         /// 
         /// to get a valid output right now you need to have the same number of ints as rectangles
         /// 
@@ -243,10 +243,10 @@ namespace TBN
         /// 
         /// you can end the method after finishing a rectangle by inputting
         /// </summary>
-        /// <param name="frameoccurances">the frames in which the hitboxes appear in order</param>
-        /// <param name="boxcode">hitboxes in order of appearance</param>
+        /// <param name="frameoccurances">the frames in which the Hurtboxes appear in order</param>
+        /// <param name="boxcode">Hurtboxes in order of appearance</param>
         /// <returns></returns>
-        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances,Rectangle[] rect)
+        public List<Tuple<int, Rectangle[]>> HurtboxGenerator(int[] frameoccurances,Rectangle[] rect)
         {
 
             List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
@@ -258,7 +258,7 @@ namespace TBN
             return final;
         }
 
-        public List<Tuple<int, Rectangle[]>> HitboxGenerator(int[] frameoccurances, Rectangle[] rect,int tilesize)
+        public List<Tuple<int, Rectangle[]>> HurtboxGenerator(int[] frameoccurances, Rectangle[] rect,int tilesize)
         {
 
             List<Tuple<int, Rectangle[]>> final = new List<Tuple<int, Rectangle[]>>();
@@ -449,26 +449,26 @@ namespace TBN
         }
 
         /// <summary>
-        /// Draws all of the hitboxes and hurtboxes.
+        /// Draws all of the Hurtboxes and Hitboxes.
         /// </summary>
         /// <param name="sb"></param>
         public virtual void DrawLiterals(SpriteBatch sb)
         {
-            Tuple<float, Rectangle>[] hit = GetCurrentHitboxs();
+            Tuple<float, Rectangle>[] hit = GetCurrentHurtboxs();
             for (int i = 0; i < hit.Length; i++)
             {
                 sb.Draw(SpriteSheet.WhitePixel,
                     hit[i].Item2,
-                    new Color(Color.Red, .1f));
+                    new Color(Color.Green, .1f));
             }
-            Tuple<float, Rectangle>[] hurt = GetCurrentHurtboxs();
+            Tuple<float, Rectangle>[] hurt = GetCurrentHitboxs();
             for (int i = 0; i < hurt.Length; i++)
             {
                 if (hitCollision == null || !hitCollision[i])
                 {
                     sb.Draw(SpriteSheet.WhitePixel,
                         hurt[i].Item2,
-                        new Color(Color.Green, .1f));
+                        new Color(Color.Red, .1f));
                 }
                 else
                 {
@@ -485,14 +485,14 @@ namespace TBN
         public virtual AttackInfo TryAttack(Character other)
         {
             AttackInfo hit = null;
-            Tuple<float, Rectangle>[] target = other.GetCurrentHitboxs();
-            Tuple<float, Rectangle>[] weapon = GetCurrentHurtboxs();
-            hitCollision = new bool[weapon.Count()];
-            for(int i = 0; i < target.Length; i++)
+            Tuple<float, Rectangle>[] hurtboxes = other.GetCurrentHurtboxs();
+            Tuple<float, Rectangle>[] hitboxes = GetCurrentHitboxs();
+            hitCollision = new bool[hitboxes.Count()];
+            for(int i = 0; i < hurtboxes.Length; i++)
             {
-                for (int j = 0; j < weapon.Length; j++)
+                for (int j = 0; j < hitboxes.Length; j++)
                 {
-                    if (weapon[j].Item2.Intersects(target[i].Item2))
+                    if (hitboxes[j].Item2.Intersects(hurtboxes[i].Item2))
                     {
                         // This if statement will be expanded to determine whether or not a move hits.
                         // An Attack info should never go through if the other player doesn't respond in some manner to the strike.
@@ -510,7 +510,7 @@ namespace TBN
                             // Create attack info here
                             AttackInfo temp = new AttackInfo(
                                 CurrentAction.MyType, CurrentAction.MyProperties, CurrentAction.JuggleMod,
-                                CurrentAction.Damage * DamageMultiplier * weapon[j].Item1  * target[i].Item1,
+                                CurrentAction.Damage * DamageMultiplier * hitboxes[j].Item1  * hurtboxes[i].Item1,
                                 CurrentAction.ScalingMod,
                                 CurrentAction.RedHealth,
                                 CurrentAction.StunOnHit,
@@ -520,7 +520,7 @@ namespace TBN
                             {
                                 CurrentActionHits++;
                                 hit = temp;
-                                CurrentActionLastHit = _hurtboxKeyFrameIndex;
+                                CurrentActionLastHit = _hitboxKeyFrameIndex;
                             }
                             else if (hit.Damage < temp.Damage)
                             {
@@ -580,15 +580,15 @@ namespace TBN
         }
 
         /// <summary>
-        /// Gets the current Hitboxes in World Space
+        /// Gets the current Hurtboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Tuple<float, Rectangle>[] GetCurrentHitboxs()
+        public Tuple<float, Rectangle>[] GetCurrentHurtboxs()
         {
             int place = -1;
-            for(int i = 0; i < CurrentAction.Hitboxes.Count; i++)
+            for(int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
             {
-                if(CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
+                if(CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
                 {
                     place = i;
                 }
@@ -603,28 +603,28 @@ namespace TBN
 
             }
             int pos = 0;
-            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hitboxes[place].Item2.Length];
-            for (int i = 0; i < (CurrentAction.Hitboxes[place].Item2).Length; i++)
+            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hurtboxes[place].Item2.Length];
+            for (int i = 0; i < (CurrentAction.Hurtboxes[place].Item2).Length; i++)
             {
                 if(FaceRight)
-                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]));
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtboxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]));
                 else
-                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hitboxes[place].Item2[i])));
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtboxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hurtboxes[place].Item2[i])));
                 pos++;
             }
             return ret;
         }
 
         /// <summary>
-        /// Gets the current Hurtboxes in World Space
+        /// Gets the current Hitboxes in World Space
         /// </summary>
         /// <returns></returns>
-        public Tuple<float, Rectangle>[] GetCurrentHurtboxs()
+        public Tuple<float, Rectangle>[] GetCurrentHitboxs()
         {
             int place = -1;
-            for (int i = 0; i < CurrentAction.Hurtboxes.Count; i++)
+            for (int i = 0; i < CurrentAction.Hitboxes.Count; i++)
             {
-                if (CurrentAction.Hurtboxes[i].Item1 <= CurrentActionFrame)
+                if (CurrentAction.Hitboxes[i].Item1 <= CurrentActionFrame)
                 {
                     if(CurrentActionLastHit < i)
                         place = i;
@@ -639,15 +639,15 @@ namespace TBN
                 return new Tuple<float, Rectangle>[] { };
 
             }
-            _hurtboxKeyFrameIndex = place;
+            _hitboxKeyFrameIndex = place;
             int pos = 0;
-            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hurtboxes[place].Item2.Length];
-            for (int i = 0; i < (CurrentAction.Hurtboxes[place].Item2).Length; i++)
+            Tuple<float, Rectangle>[] ret = new Tuple<float, Rectangle>[CurrentAction.Hitboxes[place].Item2.Length];
+            for (int i = 0; i < (CurrentAction.Hitboxes[place].Item2).Length; i++)
             {
                 if (FaceRight)
-                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hurtboxes[place].Item2[i]));
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitboxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, CurrentAction.Hitboxes[place].Item2[i]));
                 else
-                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HurtBoxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hurtboxes[place].Item2[i])));
+                    ret[pos] = new Tuple<float, Rectangle>(CurrentAction.HitboxMultipliers[place][i], ConvertToWorldSpace(AnchorPoint, FaceLeft(CurrentAction.Hitboxes[place].Item2[i])));
                 pos++;
             }
             return ret;

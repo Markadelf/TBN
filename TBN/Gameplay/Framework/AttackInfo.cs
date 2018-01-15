@@ -13,7 +13,8 @@ namespace TBN
         Strike,
         GrabVertical,
         GrabHorizontal,
-        Stagger
+        Stagger,
+        MidGrabHit
     }
 
     public class AttackInfo

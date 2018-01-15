@@ -21,9 +21,9 @@ namespace TBN
         void Draw();
         
         /// <summary>
-        /// Returns the current hitbox of the projectile with a global position
+        /// Returns the current Hitbox of the projectile with a global position
         /// </summary>
-        /// <returns>The hitbox relative to the world</returns>
+        /// <returns>The Hitbox relative to the world</returns>
         Rectangle GetCurrentHitbox();
         
         /// <summary>

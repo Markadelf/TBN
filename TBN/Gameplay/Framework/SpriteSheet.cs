@@ -10,7 +10,7 @@ namespace TBN
     public class SpriteSheet
     {
         /// <summary>
-        /// A white pixel used to draw literal hitboxes
+        /// A white pixel used to draw literal Hurtboxes
         /// </summary>
         public static Texture2D WhitePixel;
         /// <summary>

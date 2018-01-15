@@ -25,7 +25,9 @@ namespace TBN
         //Is this move a light move?
         Light = 32,
         //Is this Action one in which you cannot preform tasks
-        Incapacitated = 64
+        Incapacitated = 64,
+        //Hyper Armor
+        Armored = 128
     }
 
     public class Action
@@ -55,21 +57,21 @@ namespace TBN
         /// </summary>
         public int JuggleMod { get; set; }
         /// <summary>
-        /// A list of hitboxes and their start frames in order
-        /// </summary>
-        public List<Tuple<int, Rectangle[]>> Hitboxes { get; set; }
-        /// <summary>
-        /// A list of multipliers on the hitbox damage
-        /// </summary>
-        public List<float[]> HitBoxMultipliers { get; set; }
-        /// <summary>
-        /// A list of hurtboxes and their start frames in order
+        /// A list of Hurtboxes and their start frames in order
         /// </summary>
         public List<Tuple<int, Rectangle[]>> Hurtboxes { get; set; }
         /// <summary>
-        /// A list of multipliers on the hitbox damage
+        /// A list of multipliers on the Hurtbox damage
         /// </summary>
-        public List<float[]> HurtBoxMultipliers { get; set; }
+        public List<float[]> HurtboxMultipliers { get; set; }
+        /// <summary>
+        /// A list of Hitboxes and their start frames in order
+        /// </summary>
+        public List<Tuple<int, Rectangle[]>> Hitboxes { get; set; }
+        /// <summary>
+        /// A list of multipliers on the Hurtbox damage
+        /// </summary>
+        public List<float[]> HitboxMultipliers { get; set; }
         /// <summary>
         /// A list of movement vectors and their start frames in order
         /// </summary>
@@ -117,21 +119,21 @@ namespace TBN
         /// <param name="frameLength">Length in frames of the action.</param>
         /// <param name="juggleNum"></param>
         /// <param name="juggleMod"></param>
-        /// <param name="hitboxes">The damage taking colliders on the action</param>
-        /// <param name="hurtboxes">The damage dealing colliders on the action</param>
+        /// <param name="hurtboxes">The damage taking colliders on the action</param>
+        /// <param name="hitboxes">The damage dealing colliders on the action</param>
         /// <param name="disp">The displacements by frame of the action using a keyframe system</param>
         /// <param name="maxHits">The max number of times a move can hit</param>
         /// <param name="miscBehaviors">Any behaivior that you want that is not covered elsewhere</param>
         /// <param name="damage">The amount of damage the move does.</param>
         public Action(int actionID, int frameLength, int juggleNum, int juggleMod,
-            List<Tuple<int, Rectangle[]>> hitboxes, List<Tuple<int, Rectangle[]>> hurtboxes, List<Tuple<int, Vector2>> disp,
+            List<Tuple<int, Rectangle[]>> hurtboxes, List<Tuple<int, Rectangle[]>> hitboxes, List<Tuple<int, Vector2>> disp,
             int maxHits,
             List<Tuple<int, SimpleBehavior>> miscBehaviors,
             float damage = 0, float scalMod = 0, float redHealth = 0,
             ActionProperties prop = ActionProperties.None,
             AttackType type = AttackType.Strike,
-            List<float[]> hitboxMultipliers = null,
-            List<float[]> hurtboxMultipliers = null, 
+            List<float[]> hurtboxMultipliers = null,
+            List<float[]> hitboxMultipliers = null, 
             int stunOnHit = 0,
             int stunOnBlock = 0)
         {
@@ -139,8 +141,8 @@ namespace TBN
             EndFrame = frameLength;
             JuggleNumber = juggleNum;
             JuggleMod = juggleMod;
-            Hitboxes = hitboxes;
             Hurtboxes = hurtboxes;
+            Hitboxes = hitboxes;
             FrameDisplacement = disp;
             MaxHits = maxHits;
             ComboList = new List<Tuple<ActionCondition, Action>>();
@@ -153,26 +155,26 @@ namespace TBN
             MyProperties = prop;
             MyType = type;
             //Multipliers
-            HitBoxMultipliers = hitboxMultipliers;
-            if (HitBoxMultipliers == null)
-                HitBoxMultipliers = new List<float[]>();
-            while (HitBoxMultipliers.Count < hitboxes.Count)
+            HurtboxMultipliers = hurtboxMultipliers;
+            if (HurtboxMultipliers == null)
+                HurtboxMultipliers = new List<float[]>();
+            while (HurtboxMultipliers.Count < hurtboxes.Count)
             {
-                HitBoxMultipliers.Add(new float[hitboxes[HitBoxMultipliers.Count].Item2.Length]);
-                for (int i = 0; i < HitBoxMultipliers[HitBoxMultipliers.Count-1].Length; i++)
+                HurtboxMultipliers.Add(new float[hurtboxes[HurtboxMultipliers.Count].Item2.Length]);
+                for (int i = 0; i < HurtboxMultipliers[HurtboxMultipliers.Count-1].Length; i++)
                 {
-                    HitBoxMultipliers[HitBoxMultipliers.Count - 1][i] = 1;
+                    HurtboxMultipliers[HurtboxMultipliers.Count - 1][i] = 1;
                 }
             }
-            HurtBoxMultipliers = hurtboxMultipliers;
-            if (HurtBoxMultipliers == null)
-                HurtBoxMultipliers = new List<float[]>();
-            while (HurtBoxMultipliers.Count < hurtboxes.Count)
+            HitboxMultipliers = hitboxMultipliers;
+            if (HitboxMultipliers == null)
+                HitboxMultipliers = new List<float[]>();
+            while (HitboxMultipliers.Count < hitboxes.Count)
             {
-                HurtBoxMultipliers.Add(new float[hurtboxes[HurtBoxMultipliers.Count].Item2.Length]);
-                for (int i = 0; i < HurtBoxMultipliers[HurtBoxMultipliers.Count - 1].Length; i++)
+                HitboxMultipliers.Add(new float[hitboxes[HitboxMultipliers.Count].Item2.Length]);
+                for (int i = 0; i < HitboxMultipliers[HitboxMultipliers.Count - 1].Length; i++)
                 {
-                    HurtBoxMultipliers[HurtBoxMultipliers.Count - 1][i] = 1;
+                    HitboxMultipliers[HitboxMultipliers.Count - 1][i] = 1;
                 }
             }
             StunOnHit = stunOnHit;
@@ -189,8 +191,8 @@ namespace TBN
             EndFrame = length;
             JuggleNumber = 300;
             JuggleMod = 0;
-            Hitboxes = new List<Tuple<int, Rectangle[]>>();
             Hurtboxes = new List<Tuple<int, Rectangle[]>>();
+            Hitboxes = new List<Tuple<int, Rectangle[]>>();
             FrameDisplacement = new List<Tuple<int, Vector2>>();
             MaxHits = 0;
             ComboList = new List<Tuple<ActionCondition, Action>>();
@@ -201,35 +203,18 @@ namespace TBN
             MyProperties = ActionProperties.None;
             MyType = AttackType.Strike;
             //Multipliers
-            HitBoxMultipliers = new List<float[]>();
-            HurtBoxMultipliers = new List<float[]>();
+            HurtboxMultipliers = new List<float[]>();
+            HitboxMultipliers = new List<float[]>();
             StunOnHit = 0;
             StunOnBlock = 0;
         }
 
         /// <summary>
-        /// Adds a hitbox keyframe to the action
+        /// Adds a Hurtbox keyframe to the action
         /// </summary>
         /// <param name="startFrame">Keyframe start frame</param>
-        /// <param name="boxes">The hitboxes</param>
-        /// <param name="multipliers">The multipliers for damage to this hitbox</param>
-        public void AddHitboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
-        {
-            int index = Hitboxes.Count;
-            while (index > 0 && startFrame < Hitboxes[index - 1].Item1)
-            {
-                index--;
-            }
-            Hitboxes.Insert(index, new Tuple<int, Rectangle[]>(startFrame, boxes));
-            HitBoxMultipliers.Insert(index, multipliers);
-        }
-
-        /// <summary>
-        /// Adds a hurtbox keyframe to the action
-        /// </summary>
-        /// <param name="startFrame">Keyframe start frame</param>
-        /// <param name="boxes">The hurtboxes</param>
-        /// <param name="multipliers">The multipliers for damage to this hurtbox</param>
+        /// <param name="boxes">The Hurtboxes</param>
+        /// <param name="multipliers">The multipliers for damage to this Hurtbox</param>
         public void AddHurtboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
         {
             int index = Hurtboxes.Count;
@@ -238,7 +223,24 @@ namespace TBN
                 index--;
             }
             Hurtboxes.Insert(index, new Tuple<int, Rectangle[]>(startFrame, boxes));
-            HurtBoxMultipliers.Insert(index, multipliers);
+            HurtboxMultipliers.Insert(index, multipliers);
+        }
+
+        /// <summary>
+        /// Adds a Hitbox keyframe to the action
+        /// </summary>
+        /// <param name="startFrame">Keyframe start frame</param>
+        /// <param name="boxes">The Hitboxes</param>
+        /// <param name="multipliers">The multipliers for damage to this Hitbox</param>
+        public void AddHitboxKeyFrame(int startFrame, Rectangle[] boxes, float[] multipliers)
+        {
+            int index = Hitboxes.Count;
+            while (index > 0 && startFrame < Hitboxes[index - 1].Item1)
+            {
+                index--;
+            }
+            Hitboxes.Insert(index, new Tuple<int, Rectangle[]>(startFrame, boxes));
+            HitboxMultipliers.Insert(index, multipliers);
         }
 
         /// <summary>
@@ -275,15 +277,15 @@ namespace TBN
         /// The frame data for the current move on hit. Positive or negative.
         /// </summary>
         /// <returns>Amount of Frame Advantage (negative means the move has Frame Disadvantage)</returns>
-        public int FrameData()
+        public int PlusFrames()
         {
             int index = -1;
             //Grab the last attack on the Action
-            for (index = Hurtboxes.Count - 1; index >= 0 && Hurtboxes[index].Item2.Length == 0; index--);
+            for (index = Hitboxes.Count - 1; index >= 0 && Hitboxes[index].Item2.Length == 0; index--);
             //If we are in a move that hits, return our FrameData
             if (index > -1)
-                return StunOnHit - (EndFrame - Hurtboxes[index].Item1 - 1);
-            //A move without hurtboxes is neither plus nor minus.
+                return StunOnHit - (EndFrame - Hitboxes[index].Item1 - 1);
+            //A move without Hitboxes is neither plus nor minus.
             else
                 return 0;
         }

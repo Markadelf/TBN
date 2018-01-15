@@ -26,31 +26,31 @@ namespace TBN
 
         public BoxMan(Vector2 anchor, InputController input, SpriteSheet sheet) : base(anchor, input, sheet)
         {
-            MoveList["Idle"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Idle"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Idle"].EndFrame = 2;
 
-            MoveList["Walk"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Walk"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Walk"].EndFrame = 2;
 
-            MoveList["BackWalk"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["BackWalk"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["BackWalk"].EndFrame = 2;
 
-            MoveList["Crouch"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Crouch"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Crouch"].EndFrame = 2;
 
-            MoveList["Precrouch"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Precrouch"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Precrouch"].EndFrame = 2;
 
-            MoveList["CrouchGetup"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["CrouchGetup"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["CrouchGetup"].EndFrame = 2;
 
-            MoveList["PreJump"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["PreJump"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["PreJump"].EndFrame = 2;
 
-            MoveList["JumpIdle"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["JumpIdle"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["JumpIdle"].EndFrame = 2;
 
-            MoveList["Jump"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Jump"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Jump"].EndFrame = 2;
 
             #region Light
@@ -61,8 +61,8 @@ namespace TBN
             //Move Specifics
             MoveList["Light"].EndFrame = 2;
             MoveList["Light"].MaxHits = 1;
-            MoveList["Light"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
-            MoveList["Light"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Light"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Light"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -32, 32, 32) }, new float[] { 1 });
 
             //On Hit Properties
             MoveList["Light"].Damage = 0;
@@ -82,8 +82,8 @@ namespace TBN
             //Move Specifics
             MoveList["Medium"].EndFrame = 2;
             MoveList["Medium"].MaxHits = 1;
-            MoveList["Medium"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
-            MoveList["Medium"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(32, -24, 16, 16) }, new float[] { 1 });
+            MoveList["Medium"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Medium"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(32, -24, 16, 16) }, new float[] { 1 });
 
             //On Hit Properties
             MoveList["Medium"].Damage = 0;
@@ -103,8 +103,8 @@ namespace TBN
             //Move Specifics
             MoveList["Heavy"].EndFrame = 2;
             MoveList["Heavy"].MaxHits = 1;
-            MoveList["Heavy"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
-            MoveList["Heavy"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -24, 16, 16) }, new float[] { 1 });
+            MoveList["Heavy"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Heavy"].AddHitboxKeyFrame(0, new Rectangle[] { new Rectangle(16, -24, 16, 16) }, new float[] { 1 });
 
             //On Hit Properties
             MoveList["Heavy"].Damage = 0;
