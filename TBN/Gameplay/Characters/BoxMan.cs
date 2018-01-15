@@ -72,7 +72,7 @@ namespace TBN
             MoveList["Light"].StunOnBlock = 5;
             MoveList["Light"].ScalingMod = 1;
             MoveList["Light"].RedHealth = 0;
-            MoveList["Light"].Knockback = new Vector2(200, 0);
+            MoveList["Light"].Knockback = new Vector2(20, -20);
             #endregion
 
             #region Medium

@@ -12,7 +12,7 @@ namespace TBN
         //Properties
         public override float DamageMultiplier { get { return 1; } }
 
-        public virtual float WalkSpeed { get { return 8; } }
+        public virtual float WalkSpeed { get { return 5; } }
         public virtual float BackWalkSpeed { get { return WalkSpeed; } }
         public virtual int StandardJumpHeight { get { return 120; } }
         public virtual int FreeMoveJump { get { return 6; } }
@@ -36,6 +36,7 @@ namespace TBN
 
             MoveList.Add("Crouch", new Action(2));
             MoveList["Crouch"].MyProperties = ActionProperties.Loops | ActionProperties.AllowBlock;
+            MoveList["Crouch"].AddDisplacementKeyFrame(0, new Vector2(0, 0));
 
             MoveList.Add("Precrouch", new Action(1));
 

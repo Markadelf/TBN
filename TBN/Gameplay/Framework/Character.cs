@@ -373,10 +373,8 @@ namespace TBN
                     if (Math.Abs(PreviousMovement.X) > 3)//are we going fast enough to slide
                     {
                         //if so truncate the previous movement into something usable
-                        Vector2 Movement = new Vector2(PreviousMovement.X / 2, 0);//friction
+                        Vector2 Movement = new Vector2(PreviousMovement.X * .9f, 0);//friction
                         AnchorPoint += Movement;//add the movement
-
-
                     }
 
                 }
