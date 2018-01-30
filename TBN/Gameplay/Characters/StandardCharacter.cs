@@ -62,8 +62,8 @@ namespace TBN
 
             MoveList.Add("BlockStun", new Action(3));
             MoveList["BlockStun"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
-            MoveList["BlockStun"].AddDisplacementKeyFrame(0, new Vector2(0,0));
-            MoveList["BlockStun"].AddDisplacementKeyFrame(1, new Vector2(0,0));
+            MoveList["BlockStun"].AddDisplacementKeyFrame(0, new Vector2(0, 0));
+            MoveList["BlockStun"].AddDisplacementKeyFrame(1, new Vector2(float.NaN, float.NaN));
 
             MoveList.Add("Stagger", new Action(3));
             MoveList["Stagger"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
@@ -78,6 +78,35 @@ namespace TBN
             MoveList.Add("GrabbedV", new Action(3));
             MoveList["GrabbedV"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
+            MoveList.Add("Tumble", new Action(3, 2));
+            MoveList["Tumble"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated | ActionProperties.Loops;
+            MoveList["Tumble"].AddDisplacementKeyFrame(0, new Vector2(0, 0));
+            MoveList["Tumble"].AddDisplacementKeyFrame(1, new Vector2(float.NaN, float.NaN));
+            MoveList["Tumble"].AddMiscBehavior(1, () => { MoveList["Tumble"].FrameDisplacement[0] = new Tuple<int, Vector2>(0, new Vector2(float.NaN, float.NaN)); });
+
+            MoveList.Add("Bounce", new Action(3));
+            MoveList["Bounce"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
+            MoveList["Bounce"].AddDisplacementKeyFrame(0, new Vector2(-10, -10));
+            MoveList["Bounce"].AddDisplacementKeyFrame(1, new Vector2(float.NaN, float.NaN));
+            MoveList["Bounce"].AddMiscBehavior(-1, () => { Bounce = false; MoveList["Tumble"].FrameDisplacement[0] = new Tuple<int, Vector2>(0, new Vector2(float.NaN, float.NaN)); });
+
+
+            MoveList.Add("Grounded", new Action(3));
+            MoveList["Grounded"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
+
+            MoveList.Add("Rising", new Action(3));
+            MoveList["Rising"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
+
+            MoveList.Add("Tech", new Action(4));
+            MoveList["Tech"].AddDisplacementKeyFrame(0, new Vector2(WalkSpeed, 0));
+            MoveList["Tech"].MyProperties = ActionProperties.AllowBlock;
+
+            MoveList.Add("BackTech", new Action(5));
+            MoveList["BackTech"].AddDisplacementKeyFrame(0, new Vector2(-BackWalkSpeed, 0));
+            MoveList["BackTech"].MyProperties = ActionProperties.AllowBlock;
+
+
+            //Attacks
             MoveList.Add("Light", new Action(5));
             MoveList.Add("Medium", new Action(5));
             MoveList.Add("Heavy", new Action(5));
@@ -151,6 +180,15 @@ namespace TBN
 
             MoveList["AirStagger"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Stagger"]) };
+            MoveList["Tumble"].ComboList = new List<Tuple<ActionCondition, Action>> {
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, () =>{return false;}), MoveList["Idle"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, () =>{return Bounce && OnGround;}), MoveList["Bounce"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Grounded"])
+            };
+
+            MoveList["Bounce"].ComboList = new List<Tuple<ActionCondition, Action>> {
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, null), MoveList["Tumble"])
+            };
 
             #endregion
 
@@ -194,7 +232,7 @@ namespace TBN
                 RedHealth += Struck.RedHealth * Scaling * Scaling;
                 switch (Struck.MyType)
                 {
-                    case AttackType.Strike:
+                    case AttackType.Simple:
                         CurrentAction = MoveList["HitStun"];
                         CurrentAction.EndFrame = Struck.StunOnHit;
                         CurrentAction.FrameDisplacement[0] = new Tuple<int, Vector2>(0, new Vector2(Struck.Knockback.X * direction, Struck.Knockback.Y));
@@ -222,6 +260,13 @@ namespace TBN
                         MoveList["Stagger"].EndFrame = Struck.StunOnHit;
                         Struck = null;
                         break;
+                    case AttackType.Knockdown:
+                    case AttackType.HardKnockdown:
+                        Tech = (Struck.MyType == AttackType.Knockdown || CurrentJuggleState == JuggleState.StageThree);
+                        CurrentAction = MoveList["Tumble"];
+                        CurrentAction.FrameDisplacement[0] = new Tuple<int, Vector2>(0, new Vector2(Struck.Knockback.X * direction, Struck.Knockback.Y));
+                        OnGround = false;
+                        break;
                     default:
                         break;
                 }
@@ -239,6 +284,7 @@ namespace TBN
                 CurrentAction = MoveList["JumpIdle"];
             }
             Scaling = 1;
+            Bounce = true;
         }
     }
 }

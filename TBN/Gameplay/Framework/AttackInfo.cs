@@ -9,14 +9,7 @@ namespace TBN
 {
 
 
-    public enum AttackType
-    {
-        Strike,
-        GrabVertical,
-        GrabHorizontal,
-        Stagger,
-        MidGrabHit
-    }
+
 
     public class AttackInfo
     {

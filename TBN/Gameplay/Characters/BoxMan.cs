@@ -55,7 +55,7 @@ namespace TBN
 
             #region Light
             //Action level Properties
-            MoveList["Light"].MyType = AttackType.Strike;
+            MoveList["Light"].MyType = AttackType.Simple;
             MoveList["Light"].MyProperties = ActionProperties.Light;
 
             //Move Specifics
@@ -72,12 +72,12 @@ namespace TBN
             MoveList["Light"].StunOnBlock = 5;
             MoveList["Light"].ScalingMod = 1;
             MoveList["Light"].RedHealth = 0;
-            MoveList["Light"].Knockback = new Vector2(20, -20);
+            MoveList["Light"].Knockback = new Vector2(5, -5);
             #endregion
 
             #region Medium
             //Action level Properties
-            MoveList["Medium"].MyType = AttackType.Strike;
+            MoveList["Medium"].MyType = AttackType.Knockdown;
             MoveList["Medium"].MyProperties = ActionProperties.None;
 
             //Move Specifics
@@ -94,11 +94,12 @@ namespace TBN
             MoveList["Medium"].StunOnBlock = 5;
             MoveList["Medium"].ScalingMod = 1;
             MoveList["Medium"].RedHealth = 0;
+            MoveList["Medium"].Knockback = new Vector2(10, -10);
             #endregion
 
             #region Heavy
             //Action level Properties
-            MoveList["Heavy"].MyType = AttackType.Strike;
+            MoveList["Heavy"].MyType = AttackType.Knockdown;
             MoveList["Heavy"].MyProperties = ActionProperties.None;
 
             //Move Specifics
@@ -115,6 +116,7 @@ namespace TBN
             MoveList["Heavy"].StunOnBlock = 5;
             MoveList["Heavy"].ScalingMod = 1;
             MoveList["Heavy"].RedHealth = 0;
+            MoveList["Heavy"].Knockback = new Vector2(15, -1);
             #endregion
 
         }

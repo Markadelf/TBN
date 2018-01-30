@@ -9,6 +9,17 @@ namespace TBN
 {
     public delegate void SimpleBehavior();
 
+    public enum AttackType
+    {
+        Simple,
+        GrabVertical,
+        GrabHorizontal,
+        Stagger,
+        MidGrabHit,
+        Knockdown,
+        HardKnockdown
+    }
+
     [Flags] public enum ActionProperties
     {
         None = 0,
@@ -32,6 +43,8 @@ namespace TBN
         High = 256,
         Low = 512
     }
+
+
 
     public class Action
     {
@@ -136,7 +149,7 @@ namespace TBN
             List<Tuple<int, SimpleBehavior>> miscBehaviors,
             float damage = 0, float scalMod = 0, float redHealth = 0,
             ActionProperties prop = ActionProperties.None,
-            AttackType type = AttackType.Strike,
+            AttackType type = AttackType.Simple,
             List<float[]> hurtboxMultipliers = null,
             List<float[]> hitboxMultipliers = null, 
             int stunOnHit = 0,
@@ -207,7 +220,7 @@ namespace TBN
             ScalingMod = 1;
             RedHealth = 0;
             MyProperties = ActionProperties.None;
-            MyType = AttackType.Strike;
+            MyType = AttackType.Simple;
             //Multipliers
             HurtboxMultipliers = new List<float[]>();
             HitboxMultipliers = new List<float[]>();

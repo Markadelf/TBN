@@ -172,6 +172,8 @@ namespace TBN
                 _redHealth = value;
                 if (MaxHealth < _redHealth + _health)
                     _redHealth = MaxHealth - _health;
+                if (_redHealth < 0)
+                    _redHealth = 0;
             }
         }
         /// <summary>
@@ -179,6 +181,15 @@ namespace TBN
         /// </summary>
         public float Scaling { get; set; }
 
+        /// <summary>
+        /// True if you have a tech
+        /// </summary>
+        public bool Tech { get; set; }
+
+        /// <summary>
+        /// True if you can be bounced
+        /// </summary>
+        public bool Bounce { get; set; }
 
 
         #endregion
@@ -231,6 +242,8 @@ namespace TBN
             Target = null;
             _hitboxKeyFrameIndex = 0;
             Projectiles = new List<Projectile>();
+            Tech = true;
+            Bounce = true;
         }
         /// <summary>
         /// make a set of Hurtboxes or Hitboxes
@@ -542,7 +555,17 @@ namespace TBN
             return hit;
         }
 
-
+        /// <summary>
+        /// A simple function that converts Red Health to regular health
+        /// </summary>
+        /// <param name="val"></param>
+        public void StabilizeRedHealth(float val)
+        {
+            if (val > _redHealth)
+                val = _redHealth;
+            _redHealth -= val;
+            Health += val;
+        }
 
 
         #region Projectile Logic
