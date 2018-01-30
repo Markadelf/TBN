@@ -14,10 +14,10 @@ namespace TBN
 
         public virtual float WalkSpeed { get { return 5; } }
         public virtual float BackWalkSpeed { get { return WalkSpeed; } }
+        public virtual float TechSpeed { get { return 30; } }
         public virtual int StandardJumpHeight { get { return 120; } }
         public virtual int FreeMoveJump { get { return 6; } }
         public virtual float JumpSpeed { get { return 5; } }
-
 
 
         public StandardCharacter(Vector2 anchor, InputController input, SpriteSheet sheet, float health = 100) : base(anchor, input, sheet, health)
@@ -98,11 +98,11 @@ namespace TBN
             MoveList["Rising"].MyProperties = ActionProperties.UnGrabbable | ActionProperties.Incapacitated;
 
             MoveList.Add("Tech", new Action(4));
-            MoveList["Tech"].AddDisplacementKeyFrame(0, new Vector2(WalkSpeed, 0));
+            MoveList["Tech"].AddDisplacementKeyFrame(0, new Vector2(TechSpeed, 0));
             MoveList["Tech"].MyProperties = ActionProperties.AllowBlock;
 
             MoveList.Add("BackTech", new Action(5));
-            MoveList["BackTech"].AddDisplacementKeyFrame(0, new Vector2(-BackWalkSpeed, 0));
+            MoveList["BackTech"].AddDisplacementKeyFrame(0, new Vector2(-TechSpeed, 0));
             MoveList["BackTech"].MyProperties = ActionProperties.AllowBlock;
 
 
@@ -181,13 +181,19 @@ namespace TBN
             MoveList["AirStagger"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Stagger"]) };
             MoveList["Tumble"].ComboList = new List<Tuple<ActionCondition, Action>> {
-                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, () =>{return false;}), MoveList["Idle"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, () =>{return Bounce && LastHitLight;}), MoveList["Idle"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, () =>{return Bounce && OnGround;}), MoveList["Bounce"]),
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, Logic.OnGround(this)), MoveList["Grounded"])
             };
 
             MoveList["Bounce"].ComboList = new List<Tuple<ActionCondition, Action>> {
                 new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, null), MoveList["Tumble"])
+            };
+
+            MoveList["Grounded"].ComboList = new List<Tuple<ActionCondition, Action>> {
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,5,1), ()=>{ return Tech; }), MoveList["Tech"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, InputManager.GenerateLogic(Input,3,1), ()=>{ return Tech; }), MoveList["BackTech"]),
+                new Tuple<ActionCondition, Action>(new ActionCondition(0, 1, false, null, null), MoveList["Rising"])
             };
 
             #endregion
