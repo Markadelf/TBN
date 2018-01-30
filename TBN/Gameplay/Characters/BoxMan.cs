@@ -99,7 +99,7 @@ namespace TBN
 
             #region Heavy
             //Action level Properties
-            MoveList["Heavy"].MyType = AttackType.Knockdown;
+            MoveList["Heavy"].MyType = AttackType.HardKnockdown;
             MoveList["Heavy"].MyProperties = ActionProperties.None;
 
             //Move Specifics
