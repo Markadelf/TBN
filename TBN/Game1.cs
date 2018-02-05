@@ -9,6 +9,7 @@ namespace TBN
     /// </summary>
     public class Game1 : Game
     {
+        public static bool menu;
         public static SpriteFont Font;
         Texture2D BoxManSprite;
         GraphicsDeviceManager graphics;
@@ -81,9 +82,14 @@ namespace TBN
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-
-            FightManager.Frame();
+            
+            //Update for being in a menu, or update for being in game
+            if(menu)
+            {
+                
+            }
+            else
+                FightManager.Frame();
 
             
 

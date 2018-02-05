@@ -38,6 +38,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Menus\MenuManager.cs" />
+    <Compile Include="Menus\MenuButton.cs" />
     <Compile Include="Gameplay\Characters\StandardCharacter.cs" />
     <Compile Include="Gameplay\Framework\AttackInfo.cs" />
     <Compile Include="Gameplay\Characters\BoxMan.cs" />
@@ -54,10 +56,12 @@
     <Compile Include="Gameplay\Input\InputManager.cs" />
     <Compile Include="Gameplay\Input\InputController.cs" />
     <Compile Include="Gameplay\Input\KeyboardController.cs" />
+    <Compile Include="Menus\Menu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Gameplay\Framework\Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Gameplay\Framework\SpriteSheet.cs" />
+    <Compile Include="Menus\SimpleButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
