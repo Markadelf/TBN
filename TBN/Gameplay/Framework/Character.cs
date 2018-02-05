@@ -417,11 +417,9 @@ namespace TBN
         public void TryApplyStrike()
         {
             if(Struck != null)
-            #region Apply Hit
             {
                 ApplyStrike();
             }
-            #endregion
         }
 
         public abstract void ApplyStrike();
