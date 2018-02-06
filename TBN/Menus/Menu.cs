@@ -36,7 +36,7 @@ namespace TBN
             if (current.LeftButton == ButtonState.Pressed && _last.LeftButton == ButtonState.Released)
             {
                 //Check if a button has been clicked on
-                for (int i = 0; i < Buttons.Capacity; i++)
+                for (int i = 0; i < Buttons.Count; i++)
                 {
                     if (Buttons[i].Contains(current.X, current.Y))
                     {
@@ -54,7 +54,7 @@ namespace TBN
         public void Draw(SpriteBatch sb)
         {
             //Draw all the buttons
-            for (int i = 0; i < Buttons.Capacity; i++)
+            for (int i = 0; i < Buttons.Count; i++)
             {
                 Buttons[i].Draw(sb);
             }

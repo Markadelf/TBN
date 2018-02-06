@@ -30,6 +30,8 @@ namespace TBN
 
             //Add a main menu
             Menus.Add(MenuType.Main, new Menu());
+            Menus[MenuType.Main].Buttons.Add(new SimpleButton(new Microsoft.Xna.Framework.Rectangle(0, 0, 100, 100), StartGame, "Start"));
+            Active = Menus[MenuType.Main];
         }
 
         public static void Update()
@@ -48,17 +50,17 @@ namespace TBN
         {
             return () => { Active = Menus[menu]; };
         }
-        public static SimpleBehavior UnPause()
+        public static void UnPause()
         {
-            return () => { Game1.menu = false; };
+            Game1.menu = false;
         }
-        public static SimpleBehavior Pause()
+        public static void Pause()
         {
-            return () => { Game1.menu = true; };
+            Game1.menu = true;
         }
-        public static SimpleBehavior StartGame()
+        public static void StartGame()
         {
-            return () => { Game1.menu = false; };
+            Game1.menu = false;
         }
 
     }

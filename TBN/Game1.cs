@@ -30,6 +30,7 @@ namespace TBN
         /// </summary>
         protected override void Initialize()
         {
+            menu = true;
             // TODO: Add your initialization logic here
             SpriteSheet.WhitePixel = Content.Load<Texture2D>("CharacterSpriteSheets/pixel");
             BoxManSprite = Content.Load<Texture2D>("CharacterSpriteSheets/Boxman");
@@ -48,6 +49,8 @@ namespace TBN
             BoxMan = new BoxMan(new Vector2(200,200), new KeyboardController(),new SpriteSheet(BoxManSprite,BoxmanRects));
             OtherBoxMan = new BoxMan(new Vector2(200,200), new DummyController(),new SpriteSheet(BoxManSprite,BoxmanRects));
             Font = Content.Load<SpriteFont>("Fonts/Debug");
+            SimpleButton.SimpleButtonFont = Font;
+            SimpleButton.SimpleButtonTexture = SpriteSheet.WhitePixel;
             FightManager.Prime(BoxMan, OtherBoxMan);
             base.Initialize();
         }
@@ -86,7 +89,7 @@ namespace TBN
             //Update for being in a menu, or update for being in game
             if(menu)
             {
-                
+                MenuManager.Update();
             }
             else
                 FightManager.Frame();
@@ -107,8 +110,15 @@ namespace TBN
             spriteBatch.Begin();
             GraphicsDevice.Clear(Color.Wheat);
             // TODO: Add your drawing code here
-            BoxMan.Debug(spriteBatch);
-            FightManager.Draw(spriteBatch);
+            if (menu)
+            {
+                MenuManager.Draw(spriteBatch);
+            }
+            else
+            {
+                BoxMan.Debug(spriteBatch);
+                FightManager.Draw(spriteBatch);
+            }
             base.Draw(gameTime);
             spriteBatch.End();
         }
