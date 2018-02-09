@@ -517,7 +517,7 @@ namespace TBN
                             //We haven't already hit too much
                             CurrentActionHits < CurrentAction.MaxHits && 
                             //We get the go ahead from the juggler
-                            JuggleMeter < CurrentAction.JuggleNumber &&
+                            other.JuggleMeter < CurrentAction.JuggleNumber &&
                             //Either we aren't grabbing or we can grab
                             ((CurrentAction.MyType != AttackType.GrabHorizontal && CurrentAction.MyType != AttackType.GrabVertical) 
                                 || !other.CurrentAction.MyProperties.HasFlag(ActionProperties.UnGrabbable))

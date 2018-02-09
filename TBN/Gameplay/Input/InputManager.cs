@@ -98,7 +98,6 @@ namespace TBN
         }
         #endregion
 
-        //Not yet implemented
         public static InputLogic Mashing()
         {
             return (InputController control) => {

@@ -113,6 +113,8 @@ namespace TBN
             if (menu)
             {
                 MenuManager.Draw(spriteBatch);
+                MouseState ms = Mouse.GetState();
+                spriteBatch.Draw(SpriteSheet.WhitePixel, new Rectangle(ms.X, ms.Y, 5, 5), Color.DodgerBlue);
             }
             else
             {

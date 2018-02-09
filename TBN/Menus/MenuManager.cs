@@ -30,7 +30,7 @@ namespace TBN
 
             //Add a main menu
             Menus.Add(MenuType.Main, new Menu());
-            Menus[MenuType.Main].Buttons.Add(new SimpleButton(new Microsoft.Xna.Framework.Rectangle(0, 0, 100, 100), StartGame, "Start"));
+            Menus[MenuType.Main].Buttons.Add(new SimpleButton(new Microsoft.Xna.Framework.Rectangle(50, 50, 100, 100), StartGame, "Start"));
             Active = Menus[MenuType.Main];
         }
 

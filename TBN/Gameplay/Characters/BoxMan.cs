@@ -53,6 +53,16 @@ namespace TBN
             MoveList["Jump"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
             MoveList["Jump"].EndFrame = 2;
 
+            #region Incapacitated
+            MoveList["HitStun"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["BlockStun"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Stagger"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+            MoveList["Tumble"].AddHurtboxKeyFrame(0, new Rectangle[] { new Rectangle(-16, -32, 32, 32) }, new float[] { 1 });
+
+
+            #endregion
+
+
             #region Light
             //Action level Properties
             MoveList["Light"].MyType = AttackType.Simple;
@@ -67,7 +77,7 @@ namespace TBN
             //On Hit Properties
             MoveList["Light"].Damage = 1;
             MoveList["Light"].JuggleNumber = 300;
-            MoveList["Light"].JuggleMod = 0;
+            MoveList["Light"].JuggleMod = 20;
             MoveList["Light"].StunOnHit = 30;
             MoveList["Light"].StunOnBlock = 5;
             MoveList["Light"].ScalingMod = 1;

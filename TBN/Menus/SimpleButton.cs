@@ -38,7 +38,7 @@ namespace TBN
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(SimpleButtonTexture, Box, Color.White);
-            sb.DrawString(SimpleButtonFont, Text, new Vector2(Box.X, Box.Y), Color.Black);
+            sb.DrawString(SimpleButtonFont, Text, new Vector2(Box.X + Box.Width/2, Box.Y+ Box.Height/2), Color.Black, 0, SimpleButtonFont.MeasureString(Text) / 2, 1, SpriteEffects.None, 0);
         }
     }
 }
